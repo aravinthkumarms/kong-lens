@@ -25,10 +25,12 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MailIcon from '@mui/icons-material/Mail';
-import Example from './Services';
+import {Dashboard} from './Dashboard';
 import InfoIcon from '@mui/icons-material/Info';
 import CastIcon from '@mui/icons-material/Cast';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
+import PluginBox from "../Components/PluginBox";
+
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -99,6 +101,21 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
   }),
 );
+
+interface KeyValue {
+  key: string;
+  value: string;
+}
+const icon = <span>🌟</span>;
+const name = 'Example Box';
+const keyValues: KeyValue[] = [
+  { key: 'Host Name', value: 'www.google.com' },
+  { key: 'Tag Line', value: 'Welcome to Kong' },
+  { key: 'Version', value: '1.3.0' },
+  { key: 'Lua Version', value: 'Lua 1.2.3' },
+  { key: 'Admin Listen', value: '[127.0.0.0:8001, 127.0.0.0:8004]' },
+];
+
 
 export default function MiniDrawer() {
   const theme = useTheme();
@@ -357,7 +374,8 @@ export default function MiniDrawer() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader/>
-      <Example></Example>
+        <Dashboard/>;
+        <PluginBox/>
       </Box>
     </Box>
   );

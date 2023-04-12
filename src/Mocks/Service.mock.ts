@@ -20,7 +20,7 @@ export const data: Person[] = [
       "id": "653b21bd-4d81-4573-ba00-177cc0108dec",
       "created_at": 1422386534,
       "updated_at": 1422386534,
-      "name": "admin-api",
+      "name": "PROJECTNAME-ENVIRONMENT",
       "retries": 5,
       "protocol": "http",
       "host": "127.0.0.1",

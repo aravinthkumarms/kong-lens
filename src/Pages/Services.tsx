@@ -21,6 +21,7 @@ import {
 import { IconTrash, IconEdit } from '@tabler/icons-react';
 import { data, states } from '../Mocks/Service.mock';
 import {Person} from '../Mocks/Service.mock';
+import { Divider, Drawer } from '@mui/material';
 
 // export type Person = {
 //   id: string;
@@ -227,6 +228,14 @@ const Example = () => {
         editingMode="modal" //default
         enableColumnOrdering
         enableEditing
+        initialState={{columnVisibility:{id:false,
+          connect_timeout: false,
+      write_timeout: false,
+      read_timeout: false,
+      retries: false,
+      protocol:false,
+      port:false
+        }}}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
         renderRowActions={({ row, table }) => (
@@ -291,6 +300,7 @@ export const CreateNewAccountModal = ({
   };
 
   return (
+    <Divider>
     <Dialog opened={open}>
       <Title ta="center">Create New Account</Title>
       <form onSubmit={(e) => e.preventDefault()}>
@@ -328,6 +338,7 @@ export const CreateNewAccountModal = ({
         </Button>
       </Flex>
     </Dialog>
+    </Divider>
   );
 };
 
