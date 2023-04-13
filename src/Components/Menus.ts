@@ -15,11 +15,11 @@ export type Menus = {
 
 export const menus: Menus[] = [
   {
-    name: "SERVICES",
-    icon: "CloudIcon",
+    name: 'SERVICES',
+    icon: 'CloudIcon',
   },
   {
-    name: "ROUTES",
-    icon: "AltRouteIcon",
+    name: 'ROUTES',
+    icon: 'AltRouteIcon',
   },
 ];

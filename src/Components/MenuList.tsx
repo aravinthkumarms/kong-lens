@@ -25,89 +25,88 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import { Menus, menus } from "./Menus";
-
+import { Menus, menus } from './Menus';
 
 export default function MenuList() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   return (
-        <List>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton 
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <AltRouteIcon />
-                </ListItemIcon>
-                <ListItemText primary="USERS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <AltRouteIcon />
-                </ListItemIcon>
-                <ListItemText primary="CONNECTIONS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <AltRouteIcon />
-                </ListItemIcon>
-                <ListItemText primary="SNAPSHOTS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <AltRouteIcon />
-                </ListItemIcon>
-                <ListItemText primary="SETTINGS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-        </List>
+    <List>
+      <ListItem disablePadding sx={{ display: 'block' }}>
+        <ListItemButton
+          sx={{
+            minHeight: 48,
+            justifyContent: open ? 'initial' : 'center',
+            px: 2.5,
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              mr: open ? 3 : 'auto',
+              justifyContent: 'center',
+            }}
+          >
+            <AltRouteIcon />
+          </ListItemIcon>
+          <ListItemText primary="USERS" sx={{ opacity: open ? 1 : 0 }} />
+        </ListItemButton>
+        <ListItemButton
+          sx={{
+            minHeight: 48,
+            justifyContent: open ? 'initial' : 'center',
+            px: 2.5,
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              mr: open ? 3 : 'auto',
+              justifyContent: 'center',
+            }}
+          >
+            <AltRouteIcon />
+          </ListItemIcon>
+          <ListItemText primary="CONNECTIONS" sx={{ opacity: open ? 1 : 0 }} />
+        </ListItemButton>
+        <ListItemButton
+          sx={{
+            minHeight: 48,
+            justifyContent: open ? 'initial' : 'center',
+            px: 2.5,
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              mr: open ? 3 : 'auto',
+              justifyContent: 'center',
+            }}
+          >
+            <AltRouteIcon />
+          </ListItemIcon>
+          <ListItemText primary="SNAPSHOTS" sx={{ opacity: open ? 1 : 0 }} />
+        </ListItemButton>
+        <ListItemButton
+          sx={{
+            minHeight: 48,
+            justifyContent: open ? 'initial' : 'center',
+            px: 2.5,
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              mr: open ? 3 : 'auto',
+              justifyContent: 'center',
+            }}
+          >
+            <AltRouteIcon />
+          </ListItemIcon>
+          <ListItemText primary="SETTINGS" sx={{ opacity: open ? 1 : 0 }} />
+        </ListItemButton>
+      </ListItem>
+    </List>
   );
 }

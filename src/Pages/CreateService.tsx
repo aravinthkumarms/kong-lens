@@ -17,7 +17,9 @@ export default function InputAdornments() {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
@@ -29,7 +31,9 @@ export default function InputAdornments() {
           id="outlined-start-adornment"
           sx={{ m: 1, width: '25ch' }}
           InputProps={{
-            startAdornment: <InputAdornment position="start">kg</InputAdornment>,
+            startAdornment: (
+              <InputAdornment position="start">kg</InputAdornment>
+            ),
           }}
         />
         <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
@@ -41,10 +45,14 @@ export default function InputAdornments() {
               'aria-label': 'weight',
             }}
           />
-          <FormHelperText id="outlined-weight-helper-text">Weight</FormHelperText>
+          <FormHelperText id="outlined-weight-helper-text">
+            Weight
+          </FormHelperText>
         </FormControl>
         <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          <InputLabel htmlFor="outlined-adornment-password">
+            Password
+          </InputLabel>
           <OutlinedInput
             id="outlined-adornment-password"
             type={showPassword ? 'text' : 'password'}
@@ -78,7 +86,9 @@ export default function InputAdornments() {
           id="filled-start-adornment"
           sx={{ m: 1, width: '25ch' }}
           InputProps={{
-            startAdornment: <InputAdornment position="start">kg</InputAdornment>,
+            startAdornment: (
+              <InputAdornment position="start">kg</InputAdornment>
+            ),
           }}
           variant="filled"
         />
@@ -126,7 +136,9 @@ export default function InputAdornments() {
           id="standard-start-adornment"
           sx={{ m: 1, width: '25ch' }}
           InputProps={{
-            startAdornment: <InputAdornment position="start">kg</InputAdornment>,
+            startAdornment: (
+              <InputAdornment position="start">kg</InputAdornment>
+            ),
           }}
           variant="standard"
         />
@@ -139,10 +151,14 @@ export default function InputAdornments() {
               'aria-label': 'weight',
             }}
           />
-          <FormHelperText id="standard-weight-helper-text">Weight</FormHelperText>
+          <FormHelperText id="standard-weight-helper-text">
+            Weight
+          </FormHelperText>
         </FormControl>
         <FormControl sx={{ m: 1, width: '25ch' }} variant="standard">
-          <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
+          <InputLabel htmlFor="standard-adornment-password">
+            Password
+          </InputLabel>
           <Input
             id="standard-adornment-password"
             type={showPassword ? 'text' : 'password'}

@@ -25,11 +25,11 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MailIcon from '@mui/icons-material/Mail';
-import {Dashboard} from './Dashboard';
 import InfoIcon from '@mui/icons-material/Info';
 import CastIcon from '@mui/icons-material/Cast';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
-import PluginBox from "../Components/PluginBox";
+import { Dashboard } from './Dashboard';
+import PluginBox from '../Components/PluginBox';
 
 const drawerWidth = 240;
 
@@ -85,22 +85,22 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  ...(open && {
+    ...openedMixin(theme),
+    '& .MuiDrawer-paper': openedMixin(theme),
   }),
-);
+  ...(!open && {
+    ...closedMixin(theme),
+    '& .MuiDrawer-paper': closedMixin(theme),
+  }),
+}));
 
 interface KeyValue {
   key: string;
@@ -115,7 +115,6 @@ const keyValues: KeyValue[] = [
   { key: 'Lua Version', value: 'Lua 1.2.3' },
   { key: 'Admin Listen', value: '[127.0.0.0:8001, 127.0.0.0:8004]' },
 ];
-
 
 export default function MiniDrawer() {
   const theme = useTheme();
@@ -132,7 +131,7 @@ export default function MiniDrawer() {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open} sx={{bgcolor:"#2a3f54"}}>
+      <AppBar position="fixed" open={open} sx={{ bgcolor: '#2a3f54' }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -151,231 +150,250 @@ export default function MiniDrawer() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open} sx={{bgcolor:"#2a3f54"}}>
+      <Drawer variant="permanent" open={open} sx={{ bgcolor: '#2a3f54' }}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            {theme.direction === 'rtl' ? (
+              <ChevronRightIcon />
+            ) : (
+              <ChevronLeftIcon />
+            )}
           </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <InfoIcon />
-                </ListItemIcon>
-                <ListItemText primary="INFO" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
+                <InfoIcon />
+              </ListItemIcon>
+              <ListItemText primary="INFO" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
         </List>
         <Divider />
         {/* <MenuList></MenuList> */}
         <List>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton 
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <CloudIcon />
-                </ListItemIcon>
-                <ListItemText primary="SERVICES" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
+                <CloudIcon />
+              </ListItemIcon>
+              <ListItemText primary="SERVICES" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <AltRouteIcon />
-                </ListItemIcon>
-                <ListItemText primary="ROUTES" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
+                <AltRouteIcon />
+              </ListItemIcon>
+              <ListItemText primary="ROUTES" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <PersonIcon />
-                </ListItemIcon>
-                <ListItemText primary="CONSUMERS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
+                <PersonIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="CONSUMERS"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <ExtensionIcon />
-                </ListItemIcon>
-                <ListItemText primary="PLUGINS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
+                <ExtensionIcon />
+              </ListItemIcon>
+              <ListItemText primary="PLUGINS" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <StreamIcon />
-                </ListItemIcon>
-                <ListItemText primary="UPSTREAMS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
+                <StreamIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="UPSTREAMS"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <SecurityIcon />
-                </ListItemIcon>
-                <ListItemText primary="CERTIFICATES" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
+                <SecurityIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="CERTIFICATES"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
         <Divider />
         <List>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton 
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <PeopleIcon />
-                </ListItemIcon>
-                <ListItemText primary="USERS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
+                <PeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary="USERS" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <CastIcon />
-                </ListItemIcon>
-                <ListItemText primary="CONNECTIONS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
+                <CastIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="CONNECTIONS"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <FolderCopyIcon />
-                </ListItemIcon>
-                <ListItemText primary="SNAPSHOTS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton 
+                <FolderCopyIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="SNAPSHOTS"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="SETTINGS" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="SETTINGS" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader/>
-        <Dashboard/>;
-        <PluginBox/>
+        <DrawerHeader />
+        <Dashboard />;
+        <PluginBox />
       </Box>
     </Box>
   );

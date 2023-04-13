@@ -33,18 +33,18 @@ const BoxContainer = styled(Box)({
 });
 
 interface KeyValue {
-    key: string;
-    value: string;
-  }
-  
-  interface ExampleBoxProps {
-    icon: React.ReactNode;
-    name: string;
-    keyValues: KeyValue[];
-  }
+  key: string;
+  value: string;
+}
+
+interface ExampleBoxProps {
+  icon: React.ReactNode;
+  name: string;
+  keyValues: KeyValue[];
+}
 
 // Define the box component
-export default function ExampleBox({ icon, name, keyValues }: ExampleBoxProps){
+export default function ExampleBox({ icon, name, keyValues }: ExampleBoxProps) {
   return (
     <Box sx={{ border: '1px solid black', padding: '1rem', flex: 1 }}>
       {/* Box header */}
@@ -58,7 +58,10 @@ export default function ExampleBox({ icon, name, keyValues }: ExampleBoxProps){
       {/* Key value fields */}
       {keyValues.map((kv) => (
         <KeyValueField key={kv.key}>
-          <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: '0.5rem' }}>
+          <Typography
+            variant="body1"
+            sx={{ fontWeight: 'bold', marginRight: '0.5rem' }}
+          >
             {kv.key}:
           </Typography>
           <Typography variant="body1">{kv.value}</Typography>
@@ -66,7 +69,7 @@ export default function ExampleBox({ icon, name, keyValues }: ExampleBoxProps){
       ))}
     </Box>
   );
-};
+}
 
 // Example usage
 const icon1 = <span>🌟</span>;
@@ -94,14 +97,10 @@ const keyValues3 = [
   { key: 'Field 3', value: 'Value 3' },
 ];
 
-export const Dashboard = () => {
-  return (
-    <BoxContainer>
-      <ExampleBox icon={icon1} name={name1} keyValues={keyValues1} />
-      <ExampleBox icon={icon2} name={name2} keyValues={keyValues2} />
-      <ExampleBox icon={icon3} name={name3} keyValues={keyValues3} />
-    </BoxContainer>
-  );
-};
-
-
+export const Dashboard = () => (
+  <BoxContainer>
+    <ExampleBox icon={icon1} name={name1} keyValues={keyValues1} />
+    <ExampleBox icon={icon2} name={name2} keyValues={keyValues2} />
+    <ExampleBox icon={icon3} name={name3} keyValues={keyValues3} />
+  </BoxContainer>
+);

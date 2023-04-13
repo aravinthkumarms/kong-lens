@@ -19,9 +19,8 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { IconTrash, IconEdit } from '@tabler/icons-react';
-import { data, states } from '../Mocks/Service.mock';
-import {Person} from '../Mocks/Service.mock';
 import { Divider, Drawer } from '@mui/material';
+import { data, states, Person } from '../Mocks/Service.mock';
 
 // export type Person = {
 //   id: string;
@@ -48,9 +47,9 @@ const Example = () => {
     async ({ exitEditingMode, row, values }) => {
       if (!Object.keys(validationErrors).length) {
         tableData[row.index] = values;
-        //send/receive api updates here, then refetch or update local table data for re-render
+        // send/receive api updates here, then refetch or update local table data for re-render
         setTableData([...tableData]);
-        exitEditingMode(); //required to exit editing mode and close modal
+        exitEditingMode(); // required to exit editing mode and close modal
       }
     };
 
@@ -66,59 +65,57 @@ const Example = () => {
       ) {
         return;
       }
-      //send api delete request here, then refetch or update local table data for re-render
+      // send api delete request here, then refetch or update local table data for re-render
       tableData.splice(row.index, 1);
       setTableData([...tableData]);
     },
-    [tableData],
+    [tableData]
   );
 
   const getCommonEditTextInputProps = useCallback(
     (
-      cell: MRT_Cell<Person>,
-    ): MRT_ColumnDef<Person>['mantineEditTextInputProps'] => {
-      return {
-        error: validationErrors[cell.id],
-        onBlur: (event) => {
-          const isValid =
-            cell.column.id === 'email'
-              ? validateEmail(event.target.value)
-              : cell.column.id === 'age'
-              ? validateAge(+event.target.value)
-              : validateRequired(event.target.value);
-          if (!isValid) {
-            //set validation error for cell if invalid
-            setValidationErrors({
-              ...validationErrors,
-              [cell.id]: `${cell.column.columnDef.header} is required`,
-            });
-          } else {
-            //remove validation error for cell if valid
-            delete validationErrors[cell.id];
-            setValidationErrors({
-              ...validationErrors,
-            });
-          }
-        },
-      };
-    },
-    [validationErrors],
+      cell: MRT_Cell<Person>
+    ): MRT_ColumnDef<Person>['mantineEditTextInputProps'] => ({
+      error: validationErrors[cell.id],
+      onBlur: (event) => {
+        const isValid =
+          cell.column.id === 'email'
+            ? validateEmail(event.target.value)
+            : cell.column.id === 'age'
+            ? validateAge(+event.target.value)
+            : validateRequired(event.target.value);
+        if (!isValid) {
+          // set validation error for cell if invalid
+          setValidationErrors({
+            ...validationErrors,
+            [cell.id]: `${cell.column.columnDef.header} is required`,
+          });
+        } else {
+          // remove validation error for cell if valid
+          delete validationErrors[cell.id];
+          setValidationErrors({
+            ...validationErrors,
+          });
+        }
+      },
+    }),
+    [validationErrors]
   );
 
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
       {
-        enableHiding:true,
+        enableHiding: true,
         accessorKey: 'id',
         header: 'ID',
         enableColumnOrdering: false,
-        enableEditing: false, //disable editing on this column
+        enableEditing: false, // disable editing on this column
         enableSorting: false,
         size: 80,
       },
       {
         accessorKey: 'name',
-        enableHiding:true,
+        enableHiding: true,
         header: 'Service Name',
         size: 140,
         mantineEditTextInputProps: ({ cell }) => ({
@@ -170,7 +167,7 @@ const Example = () => {
         accessorKey: 'read_timeout',
         header: 'Read Timeout',
         size: 80,
-        enableHiding:true,
+        enableHiding: true,
         mantineEditTextInputProps: ({ cell }) => ({
           ...getCommonEditTextInputProps(cell),
           type: 'number',
@@ -180,7 +177,7 @@ const Example = () => {
         accessorKey: 'write_timeout',
         header: 'Write Timeout',
         size: 80,
-        enableHiding:true,
+        enableHiding: true,
         mantineEditTextInputProps: ({ cell }) => ({
           ...getCommonEditTextInputProps(cell),
           type: 'number',
@@ -190,7 +187,7 @@ const Example = () => {
         accessorKey: 'connect_timeout',
         header: 'Connect Timeout',
         size: 80,
-        enableHiding:true,
+        enableHiding: true,
         mantineEditTextInputProps: ({ cell }) => ({
           ...getCommonEditTextInputProps(cell),
           type: 'number',
@@ -209,7 +206,7 @@ const Example = () => {
       //   // },
       // },
     ],
-    [getCommonEditTextInputProps],
+    [getCommonEditTextInputProps]
   );
 
   return (
@@ -225,17 +222,20 @@ const Example = () => {
         }}
         columns={columns}
         data={tableData}
-        editingMode="modal" //default
+        editingMode="modal" // default
         enableColumnOrdering
         enableEditing
-        initialState={{columnVisibility:{id:false,
-          connect_timeout: false,
-      write_timeout: false,
-      read_timeout: false,
-      retries: false,
-      protocol:false,
-      port:false
-        }}}
+        initialState={{
+          columnVisibility: {
+            id: false,
+            connect_timeout: false,
+            write_timeout: false,
+            read_timeout: false,
+            retries: false,
+            protocol: false,
+            port: false,
+          },
+        }}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
         renderRowActions={({ row, table }) => (
@@ -279,7 +279,7 @@ interface Props {
   open: boolean;
 }
 
-//example of creating a mantine dialog modal for creating new rows
+// example of creating a mantine dialog modal for creating new rows
 export const CreateNewAccountModal = ({
   open,
   columns,
@@ -290,54 +290,54 @@ export const CreateNewAccountModal = ({
     columns.reduce((acc, column) => {
       acc[column.accessorKey ?? ''] = '';
       return acc;
-    }, {} as any),
+    }, {} as any)
   );
 
   const handleSubmit = () => {
-    //put your validation logic here
+    // put your validation logic here
     onSubmit(values);
     onClose();
   };
 
   return (
     <Divider>
-    <Dialog opened={open}>
-      <Title ta="center">Create New Account</Title>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <Stack
+      <Dialog opened={open}>
+        <Title ta="center">Create New Account</Title>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Stack
+            sx={{
+              width: '100%',
+              gap: '24px',
+            }}
+          >
+            {columns.map((column) => (
+              <TextInput
+                key={column.accessorKey}
+                label={column.header}
+                name={column.accessorKey}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
+              />
+            ))}
+          </Stack>
+        </form>
+        <Flex
           sx={{
+            padding: '20px',
             width: '100%',
-            gap: '24px',
+            justifyContent: 'flex-end',
+            gap: '16px',
           }}
         >
-          {columns.map((column) => (
-            <TextInput
-              key={column.accessorKey}
-              label={column.header}
-              name={column.accessorKey}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-            />
-          ))}
-        </Stack>
-      </form>
-      <Flex
-        sx={{
-          padding: '20px',
-          width: '100%',
-          justifyContent: 'flex-end',
-          gap: '16px',
-        }}
-      >
-        <Button onClick={onClose} variant="subtle">
-          Cancel
-        </Button>
-        <Button color="teal" onClick={handleSubmit} variant="filled">
-          Create New Account
-        </Button>
-      </Flex>
-    </Dialog>
+          <Button onClick={onClose} variant="subtle">
+            Cancel
+          </Button>
+          <Button color="teal" onClick={handleSubmit} variant="filled">
+            Create New Account
+          </Button>
+        </Flex>
+      </Dialog>
     </Divider>
   );
 };
@@ -348,7 +348,7 @@ const validateEmail = (email: string) =>
   email
     .toLowerCase()
     .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 const validateAge = (age: number) => age >= 18 && age <= 50;
 

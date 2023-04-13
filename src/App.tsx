@@ -5,7 +5,7 @@ import MiniDrawer from './Pages/Home';
 
 function App() {
   return (
-    <MiniDrawer></MiniDrawer>
+    <MiniDrawer />
     // <div className="App">
     //   <header className="App-header">
     //     <img src={logo} className="App-logo" alt="logo" />
