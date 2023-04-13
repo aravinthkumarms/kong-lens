@@ -1,14 +1,17 @@
 # get the base node image
-FROM node:18.15.0-alpine3.17 as builder
+FROM node:16.19.1-alpine3.17 as builder
 
 # set the working dir for container
 WORKDIR /app/src
 
 # copy other project files
-COPY . .
+COPY package*.json ./
 
 # install npm dependencies
-RUN npm install
+RUN npm install --verbose --force
+
+# copy other project files
+COPY  . .
 
 # build the folder
 RUN npm run build
@@ -17,3 +20,4 @@ RUN npm run build
 FROM nginx:latest
 COPY --from=builder /app/src/build /usr/share/nginx/html
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
