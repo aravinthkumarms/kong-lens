@@ -17,7 +17,7 @@ const ExampleBox = ({
   header,
   chips,
   coloredChipNames,
-}: ExampleBoxProps) => (
+}: ExampleBoxProps): JSX.Element => (
   <Box sx={{ bgcolor: '#f5f5f5', borderRadius: '12px', p: 2 }}>
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
       <Box
