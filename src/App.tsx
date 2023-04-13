@@ -1,27 +1,34 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import MiniDrawer from './Pages/Home';
 
-function App() {
+function App(): JSX.Element {
   return (
-    <MiniDrawer />
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.tsx</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+        <Route path="/" element={<MiniDrawer path="dashboard" />} />
+        <Route path="/dashboard" element={<MiniDrawer path="dashboard" />} />
+        <Route path="/info" element={<MiniDrawer path="info" />} />
+        <Route path="/services" element={<MiniDrawer path="services" />} />
+        <Route path="/routes" element={<MiniDrawer path="routes" />} />
+        <Route path="/consumers" element={<MiniDrawer path="consumers" />} />
+        <Route path="/plugins" element={<MiniDrawer path="plugins" />} />
+        <Route path="/upstreams" element={<MiniDrawer path="upstreams" />} />
+        <Route
+          path="/certificates"
+          element={<MiniDrawer path="certificates" />}
+        />
+        <Route path="/users" element={<MiniDrawer path="users" />} />
+        <Route
+          path="/connections"
+          element={<MiniDrawer path="connections" />}
+        />
+        <Route path="/snapshots" element={<MiniDrawer path="snapshots" />} />
+        <Route path="/settings" element={<MiniDrawer path="settings" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -28,8 +28,20 @@ import MailIcon from '@mui/icons-material/Mail';
 import InfoIcon from '@mui/icons-material/Info';
 import CastIcon from '@mui/icons-material/Cast';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
+import { useLocation, useNavigate } from 'react-router-dom';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Dashboard } from './Dashboard';
 import PluginBox from '../Components/PluginBox';
+import Info from './Info';
+import MenuItem from '../Components/Features/MenuItem';
+import Routes from './Routes';
+import Consumers from './Consumers';
+import Plugins from './Plugins';
+import Upstreams from './Upstreams';
+import Certificates from './Certificates';
+import Users from './Users';
+import Connections from './Connections';
+import Settings from './Settings';
 
 const drawerWidth = 240;
 
@@ -116,15 +128,54 @@ const keyValues: KeyValue[] = [
   { key: 'Admin Listen', value: '[127.0.0.0:8001, 127.0.0.0:8004]' },
 ];
 
-export default function MiniDrawer() {
+const renderPages: { [page: string]: JSX.Element } = {
+  dashboard: <Dashboard />,
+  info: <Info />,
+  services: <Info />,
+  routes: <Routes />,
+  consumers: <Consumers />,
+  plugins: <Plugins />,
+  upstreams: <Upstreams />,
+  certificates: <Certificates />,
+  users: <Users />,
+  connections: <Connections />,
+  snapshots: <Info />,
+  settings: <Settings />,
+};
+
+type MiniDrawerProps = {
+  path: string;
+};
+
+export default function MiniDrawer({ path }: MiniDrawerProps): JSX.Element {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [currentPage, setCurrentPage] = React.useState(<Dashboard />);
 
-  const handleDrawerOpen = () => {
+  function setPage(page: string): void {
+    setCurrentPage(renderPages[page]);
+  }
+
+  const handleDrawerOpen = (): void => {
     setOpen(true);
   };
 
-  const handleDrawerClose = () => {
+  React.useEffect(() => {
+    setPage(path);
+  }, [currentPage, path]);
+
+  const navigate = useNavigate();
+
+  const navigateToPage = (page: string): void => {
+    navigate(`/${page}`);
+  };
+
+  const handlePageRender = (page: string): void => {
+    setPage(page);
+    navigateToPage(page);
+  };
+
+  const handleDrawerClose = (): void => {
     setOpen(false);
   };
 
@@ -162,237 +213,118 @@ export default function MiniDrawer() {
         </DrawerHeader>
         <Divider />
         <List>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <InfoIcon />
-              </ListItemIcon>
-              <ListItemText primary="INFO" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+          <ListItem
+            disablePadding
+            sx={{
+              display: 'block',
+            }}
+          >
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="dashboard"
+              icon={<DashboardIcon />}
+              curLocation={path}
+            />
           </ListItem>
         </List>
         <Divider />
-        {/* <MenuList></MenuList> */}
         <List>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <CloudIcon />
-              </ListItemIcon>
-              <ListItemText primary="SERVICES" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <AltRouteIcon />
-              </ListItemIcon>
-              <ListItemText primary="ROUTES" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="CONSUMERS"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <ExtensionIcon />
-              </ListItemIcon>
-              <ListItemText primary="PLUGINS" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <StreamIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="UPSTREAMS"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <SecurityIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="CERTIFICATES"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
+          <ListItem
+            disablePadding
+            sx={{
+              display: 'block',
+            }}
+          >
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="info"
+              icon={<InfoIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="services"
+              icon={<CloudIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="routes"
+              icon={<AltRouteIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="consumers"
+              icon={<PersonIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="plugins"
+              icon={<ExtensionIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="upstreams"
+              icon={<StreamIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="certificates"
+              icon={<SecurityIcon />}
+              curLocation={path}
+            />
           </ListItem>
         </List>
         <Divider />
         <List>
           <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary="USERS" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <CastIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="CONNECTIONS"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <FolderCopyIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="SNAPSHOTS"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <SettingsIcon />
-              </ListItemIcon>
-              <ListItemText primary="SETTINGS" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="users"
+              icon={<PeopleIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="connections"
+              icon={<CastIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="snapshots"
+              icon={<FolderCopyIcon />}
+              curLocation={path}
+            />
+            <MenuItem
+              open={open}
+              handlePageRender={handlePageRender}
+              page="settings"
+              icon={<SettingsIcon />}
+              curLocation={path}
+            />
           </ListItem>
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Dashboard />;
+        {currentPage}
+        <hr />
         <PluginBox />
       </Box>
     </Box>
