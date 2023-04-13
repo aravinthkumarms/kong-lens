@@ -1,5 +1,5 @@
 # get the base node image
-FROM node:18.16.0-alpine3.12 as builder
+FROM node:18.15.0-alpine3.17 as builder
 
 # set the working dir for container
 WORKDIR /app/src
