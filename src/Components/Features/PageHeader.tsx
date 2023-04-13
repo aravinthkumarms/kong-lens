@@ -35,9 +35,6 @@ const PageHeaderBox = ({
   </Box>
 );
 
-// const header = 'Node Info';
-// const description = 'Generic details about the node';
-
 export default function PageHeader({
   header,
   description,
