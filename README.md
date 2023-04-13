@@ -1,7 +1,5 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
+Its a simple admin dashboard project with React, Typescript and Material UI.
+# Getting Started
 ## Available Scripts
 
 In the project directory, you can run:
@@ -29,15 +27,37 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### `Debugging with VS Code`
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Run the application with `npm run start` and run the debugger from the VS code by pressing `f5` or manually running it on the `Run and Debug` 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### `Running with Docker`
+
+To Create a docker image
+
+`$ docker build -t team-space-web .`
+
+To check the created image
+
+`$ docker images | grep "team-space-web"`
+
+To run as container
+
+`$ docker run -d -p 8000:80 --name="team-space-web" team-space-web`
+
+To check the running container
+
+`$ docker ps | grep "team-space-web"`
+
+To check the container logs 
+
+`$ docker logs -f team-space-web`
+
+### Deployment
+
+Nil.
 
 ## Learn More
 
