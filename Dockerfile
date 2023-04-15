@@ -7,6 +7,9 @@ WORKDIR /app/src
 # copy other project files
 COPY package*.json ./
 
+# Set prepare as empty
+RUN npm set-script prepare ''
+
 # install npm dependencies
 RUN npm install --production
 
