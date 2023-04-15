@@ -42,6 +42,7 @@ import Certificates from './Certificates';
 import Users from './Users';
 import Connections from './Connections';
 import Settings from './Settings';
+import Services from './Services';
 
 const drawerWidth = 240;
 
@@ -131,7 +132,7 @@ const keyValues: KeyValue[] = [
 const renderPages: { [page: string]: JSX.Element } = {
   dashboard: <Dashboard />,
   info: <Info />,
-  services: <Info />,
+  services: <Services />,
   routes: <Routes />,
   consumers: <Consumers />,
   plugins: <Plugins />,
@@ -324,8 +325,8 @@ export default function MiniDrawer({ path }: MiniDrawerProps): JSX.Element {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         {currentPage}
-        <hr />
-        <PluginBox />
+        {/* <hr />
+        <PluginBox /> */}
       </Box>
     </Box>
   );

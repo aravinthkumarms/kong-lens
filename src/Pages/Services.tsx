@@ -31,7 +31,7 @@ import { data, states, Person } from '../Mocks/Service.mock';
 //   state: string;
 // };
 
-const Example = () => {
+const Services = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [tableData, setTableData] = useState<Person[]>(() => data);
   const [validationErrors, setValidationErrors] = useState<{
@@ -227,14 +227,15 @@ const Example = () => {
         enableEditing
         initialState={{
           columnVisibility: {
-            id: false,
+            // id: false,
             connect_timeout: false,
             write_timeout: false,
             read_timeout: false,
             retries: false,
             protocol: false,
-            port: false,
+            // port: false,
           },
+          density: 'xs'
         }}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
@@ -262,12 +263,12 @@ const Example = () => {
           </Button>
         )}
       />
-      <CreateNewAccountModal
+      {/* <CreateNewAccountModal
         columns={columns}
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateNewRow}
-      />
+      /> */}
     </>
   );
 };
@@ -280,67 +281,67 @@ interface Props {
 }
 
 // example of creating a mantine dialog modal for creating new rows
-export const CreateNewAccountModal = ({
-  open,
-  columns,
-  onClose,
-  onSubmit,
-}: Props) => {
-  const [values, setValues] = useState<any>(() =>
-    columns.reduce((acc, column) => {
-      acc[column.accessorKey ?? ''] = '';
-      return acc;
-    }, {} as any)
-  );
+// export const CreateNewAccountModal = ({
+//   open,
+//   columns,
+//   onClose,
+//   onSubmit,
+// }: Props) => {
+//   const [values, setValues] = useState<any>(() =>
+//     columns.reduce((acc, column) => {
+//       acc[column.accessorKey ?? ''] = '';
+//       return acc;
+//     }, {} as any)
+//   );
 
-  const handleSubmit = () => {
-    // put your validation logic here
-    onSubmit(values);
-    onClose();
-  };
+//   const handleSubmit = () => {
+//     // put your validation logic here
+//     onSubmit(values);
+//     onClose();
+//   };
 
-  return (
-    <Divider>
-      <Dialog opened={open}>
-        <Title ta="center">Create New Account</Title>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <Stack
-            sx={{
-              width: '100%',
-              gap: '24px',
-            }}
-          >
-            {columns.map((column) => (
-              <TextInput
-                key={column.accessorKey}
-                label={column.header}
-                name={column.accessorKey}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-              />
-            ))}
-          </Stack>
-        </form>
-        <Flex
-          sx={{
-            padding: '20px',
-            width: '100%',
-            justifyContent: 'flex-end',
-            gap: '16px',
-          }}
-        >
-          <Button onClick={onClose} variant="subtle">
-            Cancel
-          </Button>
-          <Button color="teal" onClick={handleSubmit} variant="filled">
-            Create New Account
-          </Button>
-        </Flex>
-      </Dialog>
-    </Divider>
-  );
-};
+//   return (
+//     <Divider>
+//       <Dialog opened={open}>
+//         <Title ta="center">Create New Account</Title>
+//         <form onSubmit={(e) => e.preventDefault()}>
+//           <Stack
+//             sx={{
+//               width: '100%',
+//               gap: '24px',
+//             }}
+//           >
+//             {columns.map((column) => (
+//               <TextInput
+//                 key={column.accessorKey}
+//                 label={column.header}
+//                 name={column.accessorKey}
+//                 onChange={(e) =>
+//                   setValues({ ...values, [e.target.name]: e.target.value })
+//                 }
+//               />
+//             ))}
+//           </Stack>
+//         </form>
+//         <Flex
+//           sx={{
+//             padding: '20px',
+//             width: '100%',
+//             justifyContent: 'flex-end',
+//             gap: '16px',
+//           }}
+//         >
+//           <Button onClick={onClose} variant="subtle">
+//             Cancel
+//           </Button>
+//           <Button color="teal" onClick={handleSubmit} variant="filled">
+//             Create New Account
+//           </Button>
+//         </Flex>
+//       </Dialog>
+//     </Divider>
+//   );
+// };
 
 const validateRequired = (value: string) => !!value.length;
 const validateEmail = (email: string) =>
@@ -352,4 +353,4 @@ const validateEmail = (email: string) =>
     );
 const validateAge = (age: number) => age >= 18 && age <= 50;
 
-export default Example;
+export default Services;
