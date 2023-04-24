@@ -47,7 +47,11 @@ interface ExampleBoxProps {
 }
 
 // Define the box component
-const ExampleBox = ({ icon, name, keyValues }: ExampleBoxProps) => (
+const ExampleBox = ({
+  icon,
+  name,
+  keyValues,
+}: ExampleBoxProps): JSX.Element => (
   <Box sx={{ border: '1px solid black', padding: '0.1rem', flex: 1 }}>
     {/* Box header */}
     <BoxHeader>
@@ -58,7 +62,7 @@ const ExampleBox = ({ icon, name, keyValues }: ExampleBoxProps) => (
     </BoxHeader>
 
     {/* Key value fields */}
-    {keyValues.map((kv, index) => (
+    {keyValues.map((kv) => (
       <KeyValueField key={kv.key}>
         <Typography
           variant="body1"
@@ -115,7 +119,7 @@ const keyValues3 = [
   { key: 'Port', value: '5432' },
 ];
 
-export const Dashboard = () => (
+export const Dashboard = (): JSX.Element => (
   <BoxContainer>
     <ExampleBox icon={icon1} name={name1} keyValues={keyValues1} />
     <ExampleBox icon={icon2} name={name2} keyValues={keyValues2} />

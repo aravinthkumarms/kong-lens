@@ -109,7 +109,7 @@ const coloredChipNames = [
   'response-ratelimiting',
 ];
 
-export default function PluginBox() {
+export default function PluginBox(): JSX.Element {
   return (
     <Box>
       <ExampleBox

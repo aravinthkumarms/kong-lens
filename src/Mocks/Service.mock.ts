@@ -1,4 +1,4 @@
-export type Person = {
+export interface Service {
   id?: string;
   created_at: number;
   updated_at: number;
@@ -11,11 +11,11 @@ export type Person = {
   connect_timeout: number;
   write_timeout: number;
   read_timeout: number;
-};
+}
 
 // import { Person } from './TS';
 
-export const data: Person[] = [
+export const data: Service[] = [
   {
     id: '653b21bd-4d81-4573-ba00-177cc0108dec',
     created_at: 1422386534,

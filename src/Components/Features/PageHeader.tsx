@@ -1,4 +1,5 @@
 import * as React from 'react';
+import parse from 'html-react-parser';
 import Box from '@mui/material/Box';
 
 type PageHeaderProps = {
@@ -30,7 +31,7 @@ const PageHeaderBox = ({
         margin: '5px 0 10px',
       }}
     >
-      {description}
+      {parse(description)}
     </p>
   </Box>
 );

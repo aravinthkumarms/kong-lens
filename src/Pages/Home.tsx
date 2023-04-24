@@ -21,14 +21,10 @@ import PersonIcon from '@mui/icons-material/Person';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import StreamIcon from '@mui/icons-material/Stream';
 import SecurityIcon from '@mui/icons-material/Security';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import InfoIcon from '@mui/icons-material/Info';
 import CastIcon from '@mui/icons-material/Cast';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Dashboard } from './Dashboard';
 import PluginBox from '../Components/PluginBox';
@@ -43,6 +39,7 @@ import Users from './Users';
 import Connections from './Connections';
 import Settings from './Settings';
 import Services from './Services';
+import ServiceDetail from '../Components/Features/ServiceDetail';
 
 const drawerWidth = 240;
 
@@ -142,7 +139,12 @@ const renderPages: { [page: string]: JSX.Element } = {
   connections: <Connections />,
   snapshots: <Info />,
   settings: <Settings />,
+  servicesDetail: <ServiceDetail />,
 };
+
+// const getPage = ({ props }: any) => {
+//   return renderPages[props.page]
+// };
 
 type MiniDrawerProps = {
   path: string;
@@ -151,7 +153,7 @@ type MiniDrawerProps = {
 export default function MiniDrawer({ path }: MiniDrawerProps): JSX.Element {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [currentPage, setCurrentPage] = React.useState(<Dashboard />);
+  const [currentPage, setCurrentPage] = React.useState<JSX.Element>();
 
   function setPage(page: string): void {
     setCurrentPage(renderPages[page]);

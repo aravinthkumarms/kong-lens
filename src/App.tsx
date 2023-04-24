@@ -7,8 +7,7 @@ function App(): JSX.Element {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="*" element={<Navigate to="/dashboard" />} />
-        <Route path="/" element={<MiniDrawer path="dashboard" />} />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<MiniDrawer path="dashboard" />} />
         <Route path="/info" element={<MiniDrawer path="info" />} />
         <Route path="/services" element={<MiniDrawer path="services" />} />
@@ -27,6 +26,11 @@ function App(): JSX.Element {
         />
         <Route path="/snapshots" element={<MiniDrawer path="snapshots" />} />
         <Route path="/settings" element={<MiniDrawer path="settings" />} />
+        <Route
+          path="/services/:id/:isNew/"
+          element={<MiniDrawer path="servicesDetail" />}
+        />
+        {/* <Route path="*" element={<Navigate to="/dashboard" />} /> */}
       </Routes>
     </BrowserRouter>
   );
