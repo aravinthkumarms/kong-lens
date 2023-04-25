@@ -24,7 +24,6 @@ const NavPanel = ({ list, cur, isNew }: Props): JSX.Element => {
   };
   return (
     <Box sx={{ width: '200px' }}>
-      <Divider />
       <List>
         {list.map((text) => (
           <ListItem key={text} disablePadding>
@@ -42,7 +41,6 @@ const NavPanel = ({ list, cur, isNew }: Props): JSX.Element => {
           </ListItem>
         ))}
       </List>
-      <Divider />
     </Box>
   );
 };

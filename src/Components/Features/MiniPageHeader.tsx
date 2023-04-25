@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { Icon } from '@tabler/icons-react';
+import parse from 'html-react-parser';
 
 type PageHeaderProps = {
   header: string;
@@ -12,15 +12,22 @@ const MiniPageHeaderBox = ({ header, icon }: PageHeaderProps): JSX.Element => (
     sx={{
       bgcolor: '#f5f5f5',
       padding: '15px',
-      width: '1250px',
+      width: '1000px',
       height: '110px',
-
+      marginTop: '10px',
       display: 'flex',
     }}
   >
-    <div style={{ fontSize: '20px', margin: 'auto' }}>
+    <div
+      style={{
+        fontSize: '20px',
+        margin: 'auto',
+        alignItems: 'center',
+        display: 'flex',
+      }}
+    >
       {icon}
-      {header}
+      {parse(header)}
     </div>
   </Box>
 );

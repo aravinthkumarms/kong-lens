@@ -6,21 +6,41 @@ import {
   DialogTitle,
   Divider,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { TextInput } from '@mantine/core';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Service } from '../../Mocks/Service.mock';
+import { updateValue } from '../../Reducer/ServiceReducer';
+
+interface keyValue {
+  key: string;
+  value: string;
+}
 
 interface Props {
   service: Service;
-  textFields: string[];
+  textFields: keyValue[];
 }
 
 const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
   const val = 0;
+  const [currentService, setCurrentService] = React.useState(service);
+  // const fields = [];
+  // for (let i = 0; i < textFields.length(); i += 1) {
+  //   fields;
+  // }
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleOnSubmit = () => {
+    dispatch(updateValue(currentService));
+  };
   return (
-    <Divider>
-      <Typography sx={{ margin: 'auto' }}>Create New Service</Typography>
+    <>
+      <br />
       <Box
         sx={{
           width: '100%',
@@ -37,16 +57,38 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
             }}
           >
             {textFields.map((text) => (
-              <TextInput
-                key={text}
-                label={text}
-                name={text}
-                value={service[text as keyof typeof service]}
-                disabled={text === 'id'}
-                // onChange={(e) =>
-                //   setValues({ ...values, [e.target.name]: e.target.value })
-                // }
-              />
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  color: '#B2B2B2',
+                }}
+              >
+                <TextField
+                  key={text.value}
+                  label={
+                    text.key.charAt(0).toUpperCase() +
+                    text.key.slice(1).replace('_', ' ')
+                  }
+                  InputLabelProps={{
+                    shrink: true,
+                    style: { fontSize: 20 },
+                  }}
+                  name={text.key}
+                  variant="standard"
+                  value={
+                    currentService[text.key as keyof typeof currentService]
+                  }
+                  disabled={text.key === 'id'}
+                  onChange={(e) => {
+                    setCurrentService({
+                      ...currentService,
+                      [e.target.name]: e.target.value,
+                    });
+                  }}
+                />
+                <span style={{ fontSize: '13px' }}>{text.value}</span>
+              </div>
             ))}
           </Stack>
         </form>
@@ -78,11 +120,12 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
             color: 'white',
           }}
           variant="contained"
+          onClick={handleOnSubmit}
         >
           Submit
         </Button>
       </Box>
-    </Divider>
+    </>
   );
 };
 
