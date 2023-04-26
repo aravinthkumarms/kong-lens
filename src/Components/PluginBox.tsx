@@ -4,20 +4,31 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import ExtensionIcon from '@mui/icons-material/Extension';
+import { makeStyles } from '@mui/styles';
 
-type ExampleBoxProps = {
+
+type PluginBoxContainerProps = {
   icon: React.ReactNode;
   header: string;
   chips: { name: string; flag: boolean }[];
   coloredChipNames: string[];
 };
 
-const ExampleBox = ({
+const useStyles = makeStyles({
+  root: {
+    lineHeight: 2,
+    borderRadius: 0,
+  },
+});
+
+const PluginBoxContainer = ({
   icon,
   header,
   chips,
   coloredChipNames,
-}: ExampleBoxProps): JSX.Element => (
+}: PluginBoxContainerProps): JSX.Element => {
+  const classes = useStyles();
+  return(
   <Box sx={{ bgcolor: '#f5f5f5', borderRadius: '12px', p: 2 }}>
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
       <Box
@@ -38,11 +49,10 @@ const ExampleBox = ({
       <Stack
         direction="row"
         spacing={1}
-        flexWrap="wrap"
-        sx={{ alignItems: 'center' }}
+        sx={{ flexWrap: 'wrap', gap: '10px 10px', alignItems:'center' }}
       >
         {chips.map((chip) => (
-          <Chip
+          <Chip className={classes.root}
             key={chip.name}
             label={chip.name}
             color={
@@ -56,13 +66,13 @@ const ExampleBox = ({
     </Box>
   </Box>
 );
-
+};
 const icon = (
   <span>
     <ExtensionIcon />
   </span>
 );
-const header = 'Example Header';
+const header = 'Plugins';
 const chips = [
   { name: 'acl', flag: true },
   { name: 'key-auth', flag: true },
@@ -109,10 +119,10 @@ const coloredChipNames = [
   'response-ratelimiting',
 ];
 
-export default function PluginBox() {
+export default function PluginBox(): JSX.Element {
   return (
     <Box>
-      <ExampleBox
+      <PluginBoxContainer
         icon={icon}
         header={header}
         chips={chips}
