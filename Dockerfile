@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm set-script prepare ''
 
 # install npm dependencies
-RUN npm install --production
+RUN npm install --production --force
 
 # copy other project files
 COPY  . .
