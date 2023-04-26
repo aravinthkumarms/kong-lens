@@ -44,8 +44,8 @@ export default function InfoBox({ icon, name, keyValues }: InfoBoxProps): JSX.El
         <TableBody>
           {keyValues.map((kv) => (
               <TableRow key={kv.key}>
-                <TableCell>{kv.key}</TableCell>
-                <TableCell>{kv.value}</TableCell>
+                <TableCell style={{fontWeight:'bold'}}>{kv.key}</TableCell>
+                <TableCell style={{textShadow: '0 0 20px grey'}}>{kv.value}</TableCell>
               </TableRow>
             ))}
         </TableBody>
