@@ -235,7 +235,7 @@ const Services = () => {
             protocol: false,
             // port: false,
           },
-          density: 'xs'
+          density: 'xs',
         }}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}

@@ -30,9 +30,21 @@ interface InfoBoxProps {
 }
 
 // Define the box component
-export default function InfoBox({ icon, name, keyValues }: InfoBoxProps): JSX.Element {
+export default function InfoBox({
+  icon,
+  name,
+  keyValues,
+}: InfoBoxProps): JSX.Element {
   return (
-    <Box sx={{ 'border-radius': '10px', border: '1px', padding: '0.1rem', flex: 1, 'box-shadow': '5px 5px 5px lightgrey' }}>
+    <Box
+      sx={{
+        'border-radius': '10px',
+        border: '1px',
+        padding: '0.1rem',
+        flex: 1,
+        'box-shadow': '5px 5px 5px lightgrey',
+      }}
+    >
       {/* Box header */}
       <BoxHeader>
         <BoxIcon>{icon}</BoxIcon>
@@ -43,11 +55,13 @@ export default function InfoBox({ icon, name, keyValues }: InfoBoxProps): JSX.El
       <Table>
         <TableBody>
           {keyValues.map((kv) => (
-              <TableRow key={kv.key}>
-                <TableCell style={{fontWeight:'bold'}}>{kv.key}</TableCell>
-                <TableCell style={{textShadow: '0 0 20px grey'}}>{kv.value}</TableCell>
-              </TableRow>
-            ))}
+            <TableRow key={kv.key}>
+              <TableCell style={{ fontWeight: 'bold' }}>{kv.key}</TableCell>
+              <TableCell style={{ textShadow: '0 0 20px grey' }}>
+                {kv.value}
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </Box>

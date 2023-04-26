@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import InfoIcon from '@mui/icons-material/Info';
@@ -6,6 +6,7 @@ import LanIcon from '@mui/icons-material/Lan';
 import StorageIcon from '@mui/icons-material/Storage';
 import PluginBox from '../Components/PluginBox';
 import InfoBox from '../Components/InfoBox';
+import { GET } from '../Helpers/ApiHelpers';
 
 // Define the container for the three boxes
 const BoxContainer = styled(Box)({
@@ -58,14 +59,37 @@ const keyValues3 = [
   { key: 'Port', value: '5432' },
 ];
 
-export const Dashboard = (): JSX.Element => (
-  <Box>
-  <BoxContainer>
-    <InfoBox icon={icon1} name={name1} keyValues={keyValues1} />
-    <InfoBox icon={icon2} name={name2} keyValues={keyValues2} />
-    <InfoBox icon={icon3} name={name3} keyValues={keyValues3} />
-  </BoxContainer>
-  <br/><br/>
-  <PluginBox/>
-  </Box>
-);
+export const Dashboard = (): JSX.Element => {
+  const [apiData, setApiData] = useState<any>([]);
+  const [infoValues, setInfoData] = useState<any>([]);
+  
+  // Use useEffect to fetch API data on component mount
+  useEffect(() => {
+    GET({url:'https://localhost:8001/'})
+      .then(response => console.log(response.data))
+      // .then(data => setApiData(data))
+      .catch(err => console.log(err));
+    // console.log(apiData);
+    const infoData:any = [
+        { key: 'Host Name', value: apiData.hostname },
+        { key: 'Tag Line', value: 'Value 2' },
+        { key: 'Version', value: 'Value 3' },
+        { key: 'LUA Version', value: 'Value 4' },
+        { key: 'Admin Listen', value: '["127.0.0.0:8001", "127.0.0.0:8444"]' },
+      ];
+      setInfoData(infoData);
+      console.log(infoValues);
+  }, []);
+  return (
+    <Box>
+      <BoxContainer>
+        <InfoBox icon={icon1} name={name1} keyValues={infoValues} />
+        <InfoBox icon={icon2} name={name2} keyValues={keyValues2} />
+        <InfoBox icon={icon3} name={name3} keyValues={keyValues3} />
+      </BoxContainer>
+      <br />
+      <br />
+      <PluginBox />
+    </Box>
+  );
+};

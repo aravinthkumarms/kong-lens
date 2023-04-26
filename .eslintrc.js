@@ -48,7 +48,8 @@ module.exports = {
     'react/function-component-definition': 'off',
     'react/react-in-jsx-scope': 'off',
     'camelcase':'off',
-    'no-nested-ternary': 'warn'
+    'no-nested-ternary': 'warn',
+    'arrow-body-style':'off',
   },
   settings: {
     'import/resolver': {
