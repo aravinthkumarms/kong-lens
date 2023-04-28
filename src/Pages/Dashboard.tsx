@@ -60,30 +60,33 @@ const keyValues3 = [
 ];
 
 export const Dashboard = (): JSX.Element => {
-  const [apiData, setApiData] = useState<any>([]);
-  const [infoValues, setInfoData] = useState<any>([]);
-  
+  const [apiData, setApiData] = useState<any>({});
+  const [infoData, setInfoData] = useState<any>([]);
+
   // Use useEffect to fetch API data on component mount
   useEffect(() => {
-    GET({url:'https://localhost:8001/'})
-      .then(response => console.log(response.data))
-      // .then(data => setApiData(data))
-      .catch(err => console.log(err));
-    // console.log(apiData);
-    const infoData:any = [
-        { key: 'Host Name', value: apiData.hostname },
-        { key: 'Tag Line', value: 'Value 2' },
-        { key: 'Version', value: 'Value 3' },
-        { key: 'LUA Version', value: 'Value 4' },
-        { key: 'Admin Listen', value: '["127.0.0.0:8001", "127.0.0.0:8444"]' },
-      ];
-      setInfoData(infoData);
-      console.log(infoValues);
+    async function getData(){
+      const result = await GET({url:'https://localhost:8001/'})
+      setApiData(result.data)
+    }
+    getData()
   }, []);
+
+  // Use useEffect to update the infoData state after apiData has changed
+  useEffect(() => {
+    const data = [
+      { key: 'Host Name', value: apiData.hostname },
+      { key: 'Tag Line', value: apiData.tagline },
+      { key: 'Version', value: apiData.version },
+      { key: 'LUA Version', value: apiData.lua_version },
+      { key: 'Admin Listen', value: apiData.lua_version },
+    ];
+    setInfoData(data);
+  }, [apiData]);
   return (
     <Box>
       <BoxContainer>
-        <InfoBox icon={icon1} name={name1} keyValues={infoValues} />
+        <InfoBox icon={icon1} name={name1} keyValues={infoData} />
         <InfoBox icon={icon2} name={name2} keyValues={keyValues2} />
         <InfoBox icon={icon3} name={name3} keyValues={keyValues3} />
       </BoxContainer>
