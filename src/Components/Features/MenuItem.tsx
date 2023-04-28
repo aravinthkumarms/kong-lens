@@ -22,7 +22,7 @@ const MenuItemElement = ({
       minHeight: 48,
       justifyContent: open ? 'initial' : 'center',
       px: 2.5,
-      backgroundColor: curLocation === page ? '#2a3f54' : '#FFFFFF',
+      backgroundColor: curLocation.includes(page) ? '#2a3f54' : '#FFFFFF',
     }}
     onClick={() => {
       handlePageRender(page);
