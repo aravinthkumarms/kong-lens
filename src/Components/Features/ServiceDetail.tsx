@@ -3,6 +3,8 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { IconInfoCircle } from '@tabler/icons-react';
+import AltRouteIcon from '@mui/icons-material/AltRoute';
+import ExtensionIcon from '@mui/icons-material/Extension';
 import PageHeader from './PageHeader';
 import NavPanel from './MiniNavPanel';
 import ServiceEditor from './ModifyOrAddService';
@@ -15,10 +17,19 @@ type keyValue = {
   value: string;
 };
 
+interface navProps {
+  value: string;
+  icon: JSX.Element;
+}
+
 const ServiceDetail = (): JSX.Element => {
   const { isNew } = useParams();
   const content: Service = useSelector((state: RootState) => state.service);
-  const list = ['Service Details', 'Routes', 'Plugins'];
+  const list: navProps[] = [
+    { value: 'Service Details', icon: <IconInfoCircle /> },
+    { value: 'Routes', icon: <AltRouteIcon /> },
+    { value: 'Plugins', icon: <ExtensionIcon /> },
+  ];
   const textFields: keyValue[] = [
     { key: 'name', value: 'The service name.' },
     {
@@ -88,7 +99,6 @@ const ServiceDetail = (): JSX.Element => {
             header="<b>Service Details</b>"
             icon={<IconInfoCircle />}
           />
-
           <ServiceEditor service={content} textFields={textFields} />
         </Box>
       </Box>

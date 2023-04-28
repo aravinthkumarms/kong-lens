@@ -3,46 +3,60 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import ExtensionIcon from '@mui/icons-material/Extension';
+import ExtensionSharpIcon from '@mui/icons-material/ExtensionSharp';
+// import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 
-type ExampleBoxProps = {
+type PluginBoxContainerProps = {
   icon: React.ReactNode;
   header: string;
   chips: { name: string; flag: boolean }[];
   coloredChipNames: string[];
 };
 
-const ExampleBox = ({
+const BoxHeader = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: '1rem',
+  backgroundColor: '#f2f2f2',
+  padding: '0.5rem',
+});
+
+// Define styles for the icon in the box header
+const BoxIcon = styled(Box)({
+  marginRight: '0.5rem',
+});
+
+const PluginBoxContainer = ({
   icon,
   header,
   chips,
   coloredChipNames,
-}: ExampleBoxProps): JSX.Element => (
-  <Box sx={{ bgcolor: '#f5f5f5', borderRadius: '12px', p: 2 }}>
-    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-      <Box
-        sx={{
-          width: '24px',
-          height: '24px',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          mr: 1,
-        }}
-      >
-        {icon}
-      </Box>
-      <Typography variant="h6">{header}</Typography>
-    </Box>
+}: PluginBoxContainerProps): JSX.Element => (
+  <Box
+    sx={{
+      'border-radius': '10px',
+      border: '1px',
+      padding: '0.1rem',
+      flex: 1,
+      'box-shadow': '5px 5px 5px lightgrey',
+    }}
+  >
+    <BoxHeader>
+      <BoxIcon>{icon}</BoxIcon>
+      <Typography variant="h6" sx={{ color: 'black' }}>
+        {header}
+      </Typography>
+    </BoxHeader>
     <Box>
       <Stack
         direction="row"
         spacing={1}
-        flexWrap="wrap"
-        sx={{ alignItems: 'center' }}
+        sx={{ flexWrap: 'wrap', gap: '10px 10px', alignItems: 'flex-start' }}
       >
         {chips.map((chip) => (
           <Chip
+            sx={{ lineHeight: 2, borderRadius: 5 }}
             key={chip.name}
             label={chip.name}
             color={
@@ -53,49 +67,43 @@ const ExampleBox = ({
           />
         ))}
       </Stack>
+      <br />
     </Box>
   </Box>
 );
-
 const icon = (
   <span>
-    <ExtensionIcon />
+    <ExtensionSharpIcon />
   </span>
 );
-const header = 'Example Header';
+const header = 'PLUGINS';
 const chips = [
-  { name: 'acl', flag: true },
+  { name: 'responce-transformer', flag: true },
+  { name: 'requst-termination', flag: true },
+  { name: 'correlation-id', flag: true },
+  { name: 'statsd', flag: true },
+  { name: 'jwt', flag: false },
+  { name: 'cors', flag: true },
+  { name: 'basic-auth', flag: false },
   { name: 'key-auth', flag: true },
-  { name: 'basic-auth', flag: true },
-  { name: 'cors', flag: false },
+  { name: 'idap-auth', flag: false },
+  { name: 'http-log', flag: true },
   { name: 'oauth2', flag: true },
-  { name: 'rate-limiting', flag: false },
-  { name: 'request-termination', flag: true },
-  { name: 'response-ratelimiting', flag: false },
-  { name: 'acl', flag: true },
-  { name: 'key-auth', flag: true },
-  { name: 'basic-auth', flag: true },
-  { name: 'cors', flag: false },
-  { name: 'oauth2', flag: true },
-  { name: 'rate-limiting', flag: false },
-  { name: 'request-termination', flag: true },
-  { name: 'response-ratelimiting', flag: false },
-  { name: 'acl', flag: true },
-  { name: 'key-auth', flag: true },
-  { name: 'basic-auth', flag: true },
-  { name: 'cors', flag: false },
-  { name: 'oauth2', flag: true },
-  { name: 'rate-limiting', flag: false },
-  { name: 'request-termination', flag: true },
-  { name: 'response-ratelimiting', flag: false },
-  { name: 'acl', flag: true },
-  { name: 'key-auth', flag: true },
-  { name: 'basic-auth', flag: true },
-  { name: 'cors', flag: false },
-  { name: 'oauth2', flag: true },
-  { name: 'rate-limiting', flag: false },
-  { name: 'request-termination', flag: true },
-  { name: 'response-ratelimiting', flag: false },
+  { name: 'hmac-auth', flag: true },
+  { name: 'acl', flag: false },
+  { name: 'datadog', flag: true },
+  { name: 'tcp-log', flag: false },
+  { name: 'ip-restriction', flag: true },
+  { name: 'requst-transformer', flag: false },
+  { name: 'file-log', flag: true },
+  { name: 'bot-detection', flag: true },
+  { name: 'loggly', flag: true },
+  { name: 'requst-size-limiting', flag: false },
+  { name: 'syslog', flag: true },
+  { name: 'udp-log', flag: false },
+  { name: 'aws-lambda', flag: false },
+  { name: 'runscope', flag: true },
+  { name: 'rate-limiting', flag: true },
 ];
 
 const coloredChipNames = [
@@ -111,13 +119,11 @@ const coloredChipNames = [
 
 export default function PluginBox(): JSX.Element {
   return (
-    <Box>
-      <ExampleBox
-        icon={icon}
-        header={header}
-        chips={chips}
-        coloredChipNames={coloredChipNames}
-      />
-    </Box>
+    <PluginBoxContainer
+      icon={icon}
+      header={header}
+      chips={chips}
+      coloredChipNames={coloredChipNames}
+    />
   );
 }

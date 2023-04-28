@@ -2,19 +2,21 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Service } from '../Mocks/Service.mock';
 
-const stateInterface: Service = {
+export const stateInterface: Service = {
   created_at: 0,
   updated_at: 0,
   name: '',
-  retries: 0,
+  retries: 5,
   protocol: '',
   host: '',
-  port: 0,
+  port: 80,
   path: '',
-  connect_timeout: 0,
-  write_timeout: 0,
-  read_timeout: 0,
+  connect_timeout: 60000,
+  write_timeout: 60000,
+  read_timeout: 60000,
 };
+
+const stateInterfaceList: Service[] = [stateInterface];
 
 const serviceReducer = createSlice({
   name: 'service',
@@ -38,5 +40,4 @@ const serviceReducer = createSlice({
 });
 
 export const { updateValue } = serviceReducer.actions;
-
 export default serviceReducer.reducer;

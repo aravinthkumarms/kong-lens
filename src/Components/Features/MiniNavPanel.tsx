@@ -1,6 +1,5 @@
 import {
   Box,
-  Divider,
   List,
   ListItem,
   ListItemButton,
@@ -9,14 +8,19 @@ import {
 } from '@mui/material';
 import * as React from 'react';
 
+interface navProps {
+  value: string;
+  icon: JSX.Element;
+}
+
 interface Props {
-  list: string[];
-  cur: string;
+  list: navProps[];
+  cur: navProps;
   isNew: boolean;
 }
 
 const NavPanel = ({ list, cur, isNew }: Props): JSX.Element => {
-  const [current, setCurrent] = React.useState(cur);
+  const [current, setCurrent] = React.useState(cur.value);
   const [count, setCount] = React.useState(0);
   const handleCurrent = (value: string): void => {
     setCurrent(value);
@@ -26,17 +30,21 @@ const NavPanel = ({ list, cur, isNew }: Props): JSX.Element => {
     <Box sx={{ width: '200px' }}>
       <List>
         {list.map((text) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton
-              sx={{
-                backgroundColor: current === text ? 'teal' : 'white',
-              }}
-              onClick={() => {
-                handleCurrent(text);
-              }}
-              disabled={isNew && current !== text}
-            >
-              <ListItemText primary={text} />
+          <ListItem
+            key={text.value}
+            sx={{
+              backgroundColor: current === text.value ? '#1ABB9C' : 'white',
+              color: 'black',
+              borderRadius: '10px',
+            }}
+            onClick={() => {
+              !isNew ? handleCurrent(text.value) : null;
+            }}
+            disablePadding
+          >
+            <ListItemButton disabled={isNew && current !== text.value}>
+              <ListItemIcon> {text.icon}</ListItemIcon>
+              <ListItemText primary={text.value} />
             </ListItemButton>
           </ListItem>
         ))}

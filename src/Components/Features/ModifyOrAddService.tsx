@@ -8,6 +8,7 @@ import {
   Stack,
   TextField,
   Typography,
+  styled,
 } from '@mui/material';
 import { TextInput } from '@mantine/core';
 import { useDispatch } from 'react-redux';
@@ -25,15 +26,16 @@ interface Props {
   textFields: keyValue[];
 }
 
-const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
-  const val = 0;
-  const [currentService, setCurrentService] = React.useState(service);
-  // const fields = [];
-  // for (let i = 0; i < textFields.length(); i += 1) {
-  //   fields;
-  // }
+const StyledButton = styled(Button)({
+  backgroundColor: '#1ABB9C',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#1AAA9C',
+  },
+});
 
-  const navigate = useNavigate();
+const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
+  const [currentService, setCurrentService] = React.useState(service);
   const dispatch = useDispatch();
   const handleOnSubmit = () => {
     dispatch(updateValue(currentService));
@@ -61,7 +63,6 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  color: '#B2B2B2',
                 }}
               >
                 <TextField
@@ -72,7 +73,11 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
                   }
                   InputLabelProps={{
                     shrink: true,
-                    style: { fontSize: 20 },
+                    style: {
+                      fontSize: 20,
+                      color: '#1ABB9C',
+                      margin: 'auto',
+                    },
                   }}
                   name={text.key}
                   variant="standard"
@@ -87,7 +92,9 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
                     });
                   }}
                 />
-                <span style={{ fontSize: '13px' }}>{text.value}</span>
+                <span style={{ fontSize: '13px', color: '#B2B2B2' }}>
+                  {text.value}
+                </span>
               </div>
             ))}
           </Stack>
@@ -103,27 +110,10 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
           display: 'flex',
         }}
       >
-        <Button
-          // onClick={onClose}
-          sx={{
-            backgroundColor: 'teal',
-            color: 'white',
-          }}
-          variant="contained"
-        >
-          Cancel
-        </Button>
-        <Button
-          // onClick={handleSubmit}
-          sx={{
-            backgroundColor: 'teal',
-            color: 'white',
-          }}
-          variant="contained"
-          onClick={handleOnSubmit}
-        >
+        <StyledButton variant="contained">Cancel</StyledButton>
+        <StyledButton variant="contained" onClick={handleOnSubmit}>
           Submit
-        </Button>
+        </StyledButton>
       </Box>
     </>
   );

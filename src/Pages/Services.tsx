@@ -18,9 +18,10 @@ import {
   DialogTitle,
 } from '@mui/material';
 import useAwaitableComponent from 'use-awaitable-component';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateValue } from '../Reducer/ServiceReducer';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import { stateInterface, updateValue } from '../Reducer/ServiceReducer';
 import { data, states, Service } from '../Mocks/Service.mock';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
@@ -240,7 +241,7 @@ const Services = (): JSX.Element => {
           },
           sx: {
             cursor: 'pointer',
-            textDecoration: 'underline',
+            textDecoration: 'none',
             color: '#438BCA',
           },
         }),
@@ -394,10 +395,17 @@ const Services = (): JSX.Element => {
         renderTopToolbarCustomActions={() => (
           <Button
             sx={{
-              backgroundColor: 'teal',
+              backgroundColor: '#1ABB9C',
               color: 'white',
+              '&:hover': {
+                backgroundColor: '#1AAA9C',
+              },
             }}
-            onClick={() => setCreateModalOpen(true)}
+            onClick={() => {
+              const uuid = uuidv4();
+              navigate(`/services/${uuid}/true`);
+              dispatch(updateValue(stateInterface));
+            }}
             variant="contained"
           >
             Create New Service
