@@ -65,11 +65,11 @@ export const Dashboard = (): JSX.Element => {
 
   // Use useEffect to fetch API data on component mount
   useEffect(() => {
-    async function getData(){
-      const result = await GET({url:'https://localhost:8001/'})
-      setApiData(result.data)
+    async function getData() {
+      const result = await GET({ url: 'https://localhost:8001/' });
+      setApiData(result.data);
     }
-    getData()
+    getData();
   }, []);
 
   // Use useEffect to update the infoData state after apiData has changed
