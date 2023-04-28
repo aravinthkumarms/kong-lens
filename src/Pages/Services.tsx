@@ -42,6 +42,7 @@ export const CreateNewAccountModal = ({
   onClose,
   onSubmit,
 }: Props): JSX.Element => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [values, setValues] = useState<any>();
   const fullWidth = true;
   const handleSubmit = (): void => {
