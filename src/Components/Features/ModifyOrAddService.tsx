@@ -1,18 +1,6 @@
 import * as React from 'react';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  Divider,
-  Stack,
-  TextField,
-  Typography,
-  styled,
-} from '@mui/material';
-import { TextInput } from '@mantine/core';
+import { Box, Button, Stack, TextField, styled } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { Service } from '../../Mocks/Service.mock';
 import { updateValue } from '../../Reducer/ServiceReducer';
 
@@ -37,7 +25,7 @@ const StyledButton = styled(Button)({
 const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
   const [currentService, setCurrentService] = React.useState(service);
   const dispatch = useDispatch();
-  const handleOnSubmit = () => {
+  const handleOnSubmit = (): void => {
     dispatch(updateValue(currentService));
   };
   return (

@@ -16,8 +16,6 @@ export const stateInterface: Service = {
   read_timeout: 60000,
 };
 
-const stateInterfaceList: Service[] = [stateInterface];
-
 const serviceReducer = createSlice({
   name: 'service',
   initialState: () => stateInterface,
