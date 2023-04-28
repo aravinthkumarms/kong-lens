@@ -2,12 +2,14 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import MiniDrawer from './Pages/Home';
+import Login from './Pages/Login';
 
 function App(): JSX.Element {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+        <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<MiniDrawer path="dashboard" />} />
         <Route path="/info" element={<MiniDrawer path="info" />} />
         <Route path="/services" element={<MiniDrawer path="services" />} />

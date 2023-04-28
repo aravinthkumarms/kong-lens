@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import ExtensionSharpIcon from '@mui/icons-material/ExtensionSharp';
-// import { makeStyles } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import { styled } from '@mui/material/styles';
 
 type PluginBoxContainerProps = {
@@ -27,50 +27,60 @@ const BoxIcon = styled(Box)({
   marginRight: '0.5rem',
 });
 
+const useStyles = makeStyles({
+  root: {
+    lineHeight: 2,
+    borderRadius: 5,
+  },
+});
+
 const PluginBoxContainer = ({
   icon,
   header,
   chips,
   coloredChipNames,
-}: PluginBoxContainerProps): JSX.Element => (
-  <Box
-    sx={{
-      'border-radius': '10px',
-      border: '1px',
-      padding: '0.1rem',
-      flex: 1,
-      'box-shadow': '5px 5px 5px lightgrey',
-    }}
-  >
-    <BoxHeader>
-      <BoxIcon>{icon}</BoxIcon>
-      <Typography variant="h6" sx={{ color: 'black' }}>
-        {header}
-      </Typography>
-    </BoxHeader>
-    <Box>
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{ flexWrap: 'wrap', gap: '10px 10px', alignItems: 'flex-start' }}
-      >
-        {chips.map((chip) => (
-          <Chip
-            sx={{ lineHeight: 2, borderRadius: 5 }}
-            key={chip.name}
-            label={chip.name}
-            color={
-              coloredChipNames.includes(chip.name) && chip.flag
-                ? 'success'
-                : undefined
-            }
-          />
-        ))}
-      </Stack>
-      <br />
+}: PluginBoxContainerProps): JSX.Element => {
+  const classes = useStyles();
+  return (
+    <Box
+      sx={{
+        'border-radius': '10px',
+        border: '1px',
+        padding: '0.1rem',
+        flex: 1,
+        'box-shadow': '5px 5px 5px lightgrey',
+      }}
+    >
+      <BoxHeader>
+        <BoxIcon>{icon}</BoxIcon>
+        <Typography variant="h6" sx={{ color: 'black' }}>
+          {header}
+        </Typography>
+      </BoxHeader>
+      <Box>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ flexWrap: 'wrap', gap: '10px 10px', alignItems: 'flex-start' }}
+        >
+          {chips.map((chip) => (
+            <Chip
+              className={classes.root}
+              key={chip.name}
+              label={chip.name}
+              color={
+                coloredChipNames.includes(chip.name) && chip.flag
+                  ? 'success'
+                  : undefined
+              }
+            />
+          ))}
+        </Stack>
+        <br />
+      </Box>
     </Box>
-  </Box>
-);
+  );
+};
 const icon = (
   <span>
     <ExtensionSharpIcon />
