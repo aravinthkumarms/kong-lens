@@ -22,7 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { stateInterface, updateValue } from '../Reducer/ServiceReducer';
-import { data, states, Service } from '../Mocks/Service.mock';
+import { data, Service } from '../Mocks/Service.mock';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
 
@@ -178,15 +178,15 @@ const Services = (): JSX.Element => {
     setValidationErrors({});
   };
 
-  const validateRequired = (value: string) => !!value.length;
-  const validateEmail = (email: string) =>
+  const validateRequired = (value: string): boolean => !!value.length;
+  const validateEmail = (email: string): boolean | unknown =>
     !!email.length &&
     email
       .toLowerCase()
       .match(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       );
-  const validateAge = (age: number) => age >= 18 && age <= 50;
+  const validateAge = (age: number): boolean => age >= 18 && age <= 50;
 
   const getCommonEditTextInputProps = useCallback(
     (
