@@ -50,6 +50,7 @@ module.exports = {
     'camelcase':'off',
     'no-nested-ternary': 'warn',
     'arrow-body-style':'off',
+    'default-param-last':'off',
   },
   settings: {
     'import/resolver': {
