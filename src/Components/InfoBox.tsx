@@ -38,11 +38,11 @@ export default function InfoBox({
   return (
     <Box
       sx={{
-        'border-radius': '10px',
+        borderRadius: '10px',
         border: '1px',
         padding: '0.1rem',
         flex: 1,
-        'box-shadow': '5px 5px 5px lightgrey',
+        boxShadow: '5px 5px 5px lightgrey',
       }}
     >
       {/* Box header */}

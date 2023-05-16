@@ -7,6 +7,7 @@ import StorageIcon from '@mui/icons-material/Storage';
 import PluginBox from '../Components/PluginBox';
 import InfoBox from '../Components/InfoBox';
 import { GET } from '../Helpers/ApiHelpers';
+import { BASE_API_URL } from '../Shared/constants';
 
 // Define the container for the three boxes
 const BoxContainer = styled(Box)({
@@ -61,34 +62,79 @@ const keyValues3 = [
 
 export const Dashboard = (): JSX.Element => {
   const [apiData, setApiData] = useState<any>({});
+  const [apiConnectionData, setApiConnectionData] = useState<any>({});
   const [infoData, setInfoData] = useState<any>([]);
+  const [connectionsData, setConnectionsData] = useState<any>([]);
+  const [dbData, setDBData] = useState<any>([]);
 
   // Use useEffect to fetch API data on component mount
   useEffect(() => {
     async function getData() {
-      const result = await GET({ url: 'https://localhost:8001/' });
+      const result = await GET({ url: BASE_API_URL });
+      const connections = await GET({ url: `${BASE_API_URL}/status` });
       setApiData(result.data);
+      setApiConnectionData(connections.data);
     }
     getData();
   }, []);
 
   // Use useEffect to update the infoData state after apiData has changed
   useEffect(() => {
+    const adminListen = apiData.configuration
+      ? apiData.configuration.admin_listen
+      : null;
+    const databaseConfig = apiData ? apiData.configuration : null;
     const data = [
       { key: 'Host Name', value: apiData.hostname },
       { key: 'Tag Line', value: apiData.tagline },
       { key: 'Version', value: apiData.version },
-      { key: 'LUA Version', value: apiData.lua_version },
-      { key: 'Admin Listen', value: apiData.lua_version },
+      { key: 'LUA Version', value: apiData.version },
+      { key: 'Admin Listen', value: adminListen },
+    ];
+
+    const connections = apiConnectionData ? apiConnectionData.server : {};
+    const connectionsActive = connections
+      ? connections.connections_active
+      : null;
+    const connectionsReading = connections
+      ? connections.connections_reading
+      : null;
+    const connectionsWriting = connections
+      ? connections.connections_writing
+      : null;
+    const connectionsWaiting = connections
+      ? connections.connections_waiting
+      : null;
+    const totalRequests = connections ? connections.total_requests : null;
+    const connectionsValues = [
+      { key: 'Active', value: connectionsActive },
+      { key: 'Reading', value: connectionsReading },
+      { key: 'Writing', value: connectionsWriting },
+      { key: 'Waiting', value: connectionsWaiting },
+      { key: 'Total Requests', value: totalRequests },
+    ];
+
+    const dbValues = [
+      { key: 'DBMS', value: databaseConfig ? databaseConfig.database : null },
+      { key: 'Host', value: databaseConfig ? databaseConfig.pg_host : null },
+      {
+        key: 'Database',
+        value: databaseConfig ? databaseConfig.pg_database : null,
+      },
+      { key: 'User', value: databaseConfig ? databaseConfig.pg_user : null },
+      { key: 'Port', value: databaseConfig ? databaseConfig.pg_port : null },
     ];
     setInfoData(data);
+    setConnectionsData(connectionsValues);
+    setDBData(dbValues);
+    console.log('data', typeof apiData.configuration);
   }, [apiData]);
   return (
     <Box>
       <BoxContainer>
         <InfoBox icon={icon1} name={name1} keyValues={infoData} />
-        <InfoBox icon={icon2} name={name2} keyValues={keyValues2} />
-        <InfoBox icon={icon3} name={name3} keyValues={keyValues3} />
+        <InfoBox icon={icon2} name={name2} keyValues={connectionsData} />
+        <InfoBox icon={icon3} name={name3} keyValues={dbData} />
       </BoxContainer>
       <br />
       <br />
