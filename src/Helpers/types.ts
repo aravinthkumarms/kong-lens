@@ -18,7 +18,7 @@ export type PutRequest = {
 export type DeleteRequest = {
   headers?: Record<string, unknown>;
   url: string;
-  body: Record<string, unknown>;
+  body?: Record<string, unknown>;
 };
 
 export type PatchRequest = {

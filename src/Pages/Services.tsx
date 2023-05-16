@@ -19,13 +19,13 @@ import {
 } from '@mui/material';
 import useAwaitableComponent from 'use-awaitable-component';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
-import { stateInterface, updateValue } from '../Reducer/ServiceReducer';
-import { data, Service } from '../Mocks/Service.mock';
+import { DELETE, GET } from '../Helpers/ApiHelpers';
+import { Service } from '../Mocks/Service.mock';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
-
+import { BASE_API_URL } from '../Shared/constants';
+import { snackProp } from '../Components/Features/ServiceEditor';
+import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
 // export type Service = {
 //   id: string;
 //   firstName: string;
@@ -123,15 +123,46 @@ const Services = (): JSX.Element => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const deleteRow = useRef(false);
+  const [open, setOpen] = useState(false);
+  const [snack, setSnack] = React.useState<snackProp>({
+    message: '',
+    severity: 'success',
+  });
   const [promise, setPromise] = useState<unknown>();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, execute, resolve, reject, reset] = useAwaitableComponent();
-  const [tableData, setTableData] = useState<Service[]>(() => data);
+  const [tableData, setTableData] = useState<Service[]>([]);
   const [validationErrors, setValidationErrors] = useState<{
     [cellId: string]: string;
   }>({});
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    const getServices = async () => {
+      await GET({
+        url: `${BASE_API_URL}/api/service/`,
+        headers: { 'Access-Control-Allow-Origin': '*' },
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            setTableData(response.data);
+          }
+          setSnack({
+            message: 'Successfully fetched records',
+            severity: 'success',
+          });
+        })
+        .catch((err) => {
+          setSnack({
+            message: err.response.data.message,
+            severity: 'error',
+          });
+        });
+      setOpen(true);
+    };
+    getServices();
+  }, []);
+
   const handleDeleteRow = useCallback(
     (row: MRT_Row<Service>) => {
       if (
@@ -141,8 +172,31 @@ const Services = (): JSX.Element => {
         return;
       }
       // send api delete request here, then refetch or update local table data for re-render
-      tableData.splice(row.index, 1);
-      setTableData([...tableData]);
+      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+      const deleteData = async () => {
+        await DELETE({
+          url: `${BASE_API_URL}/api/service/${row.original.id}`,
+          headers: { 'Access-Control-Allow-Origin': '*' },
+        })
+          .then((response) => {
+            if (response.status === 202) {
+              setSnack({
+                message: 'Successfully deleted the service',
+                severity: 'info',
+              });
+              tableData.splice(row.index, 1);
+              setTableData([...tableData]);
+            }
+          })
+          .catch((err) => {
+            setSnack({
+              message: err.response.data.message,
+              severity: 'info',
+            });
+          });
+        setOpen(true);
+      };
+      deleteData();
     },
     [tableData]
   );
@@ -237,8 +291,7 @@ const Services = (): JSX.Element => {
         size: 140,
         muiTableBodyCellProps: ({ cell }) => ({
           onClick: () => {
-            navigate(`/services/${cell.row.original.id}/false`);
-            dispatch(updateValue(cell.row.original));
+            navigate(`/services/${cell.row.original.id}/?newId=false`);
           },
           sx: {
             cursor: 'pointer',
@@ -334,7 +387,7 @@ const Services = (): JSX.Element => {
       //   // },
       // },
     ],
-    [getCommonEditTextInputProps, navigate, dispatch]
+    [getCommonEditTextInputProps, navigate]
   );
 
   return (
@@ -346,6 +399,14 @@ const Services = (): JSX.Element => {
           description="Service entities, as the name implies, are abstractions of each of your own upstream services. Examples of Services would be a data transformation microservice, a billing API, etc."
         />
       </Box>
+      <SnackBarAlert
+        open={open}
+        message={snack.message}
+        severity={snack.severity}
+        handleClose={() => {
+          setOpen(false);
+        }}
+      />
       <br />
       <MaterialReactTable
         displayColumnDefOptions={{
@@ -403,9 +464,7 @@ const Services = (): JSX.Element => {
               },
             }}
             onClick={() => {
-              const uuid = uuidv4();
-              navigate(`/services/${uuid}/true`);
-              dispatch(updateValue(stateInterface));
+              navigate(`/services/createService/?newId=true`);
             }}
             variant="contained"
           >
