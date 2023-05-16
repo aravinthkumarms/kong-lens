@@ -122,7 +122,6 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
         })
           .then((response) => {
             if (response.status === 200) {
-              navigate(`../services/${id}/?newId=false`, { replace: true });
               setSnack({
                 message: 'Successfully modified service',
                 severity: 'success',
