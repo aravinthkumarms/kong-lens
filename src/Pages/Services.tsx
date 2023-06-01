@@ -140,12 +140,12 @@ const Services = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getServices = async () => {
       await GET({
-        url: `${BASE_API_URL}/api/service/`,
+        url: `${BASE_API_URL}/services/`,
         headers: { 'Access-Control-Allow-Origin': '*' },
       })
         .then((response) => {
           if (response.status === 200) {
-            setTableData(response.data);
+            setTableData(response.data.data);
           }
           setSnack({
             message: 'Successfully fetched records',
@@ -154,7 +154,7 @@ const Services = (): JSX.Element => {
         })
         .catch((err) => {
           setSnack({
-            message: err.response.data.message,
+            message: 'Unable to fetch records, Please try again!',
             severity: 'error',
           });
         });
@@ -175,7 +175,7 @@ const Services = (): JSX.Element => {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       const deleteData = async () => {
         await DELETE({
-          url: `${BASE_API_URL}/api/service/${row.original.id}`,
+          url: `${BASE_API_URL}/services/${row.original.id}`,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {

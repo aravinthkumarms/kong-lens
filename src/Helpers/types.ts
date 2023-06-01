@@ -6,7 +6,7 @@ export type GetRequest = {
 export type PostRequest = {
   headers?: Record<string, unknown>;
   url: string;
-  body: Record<string, unknown>;
+  body: Record<string, unknown> | unknown;
 };
 
 export type PutRequest = {
@@ -24,5 +24,5 @@ export type DeleteRequest = {
 export type PatchRequest = {
   headers?: Record<string, unknown>;
   url: string;
-  body: Record<string, unknown>;
+  body: Record<string, unknown> | unknown;
 };

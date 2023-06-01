@@ -91,8 +91,8 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
       if (paramValue === 'true') {
         setLoading(true);
         await POST({
-          url: `${BASE_API_URL}/api/service`,
-          body: { data: currentService },
+          url: `${BASE_API_URL}/services`,
+          body: currentService,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
@@ -107,7 +107,9 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
           })
           .catch((err) => {
             setSnack({
-              message: err.response.data.message,
+              message:
+                err.response.data.message ||
+                'Unable to save data, Please try again',
               severity: 'error',
             });
           });
@@ -116,8 +118,8 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
       } else {
         setLoading(true);
         await PATCH({
-          url: `${BASE_API_URL}/api/service/${id}`,
-          body: { data: currentService },
+          url: `${BASE_API_URL}/services/${id}`,
+          body: currentService,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {

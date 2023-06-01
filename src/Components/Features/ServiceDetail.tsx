@@ -58,7 +58,7 @@ const ServiceDetail = (): JSX.Element => {
     const getService = async () => {
       if (paramValue === 'false') {
         const service = await GET({
-          url: `${BASE_API_URL}/api/service/${id}`,
+          url: `${BASE_API_URL}/services/${id}`,
           headers: { 'Access-Control-Allow-Origin': '*' },
         });
         setContent(service.data);
