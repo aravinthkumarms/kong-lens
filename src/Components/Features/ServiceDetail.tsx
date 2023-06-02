@@ -7,34 +7,11 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import CircularProgress from '@mui/material/CircularProgress';
 import PageHeader from './PageHeader';
 import NavPanel from './MiniNavPanel';
-import ServiceEditor from './ServiceEditor';
 import MiniPageHeader from './MiniPageHeader';
 import { BASE_API_URL } from '../../Shared/constants';
 import { GET } from '../../Helpers/ApiHelpers';
-
-type keyValue = {
-  key: string;
-  value: string;
-  type: string;
-};
-
-interface navProps {
-  value: string;
-  icon: JSX.Element;
-}
-
-export interface ServiceDetails {
-  id?: string;
-  name: string;
-  retries: number;
-  protocol: string;
-  host: string;
-  port: number;
-  path: string;
-  connect_timeout: number;
-  write_timeout: number;
-  read_timeout: number;
-}
+import { ServiceDetails, keyValueType, navBarProps } from '../../interfaces';
+import Editor from './Editorial/Editor';
 
 const ServiceDetail = (): JSX.Element => {
   const { id } = useParams();
@@ -68,12 +45,12 @@ const ServiceDetail = (): JSX.Element => {
     getService();
   }, [id, loading, paramValue]);
 
-  const list: navProps[] = [
+  const list: navBarProps[] = [
     { value: 'Service Details', icon: <IconInfoCircle /> },
     { value: 'Routes', icon: <AltRouteIcon /> },
     { value: 'Plugins', icon: <ExtensionIcon /> },
   ];
-  const textFields: keyValue[] = [
+  const textFields: keyValueType[] = [
     { key: 'name', value: 'The service name.', type: 'text' },
     {
       key: 'protocol',
@@ -128,7 +105,7 @@ const ServiceDetail = (): JSX.Element => {
     <Box sx={{ width: '1250px', margin: 'auto' }}>
       <CssBaseline />
       <PageHeader
-        header="Service"
+        header={`Service ${content.name}`}
         description="<a href='/services' style=color:'#79C2E3';text-decoration:none>service</a> / show"
       />
       <br />
@@ -158,7 +135,11 @@ const ServiceDetail = (): JSX.Element => {
               <CircularProgress sx={{ margin: 'auto', color: '#1ABB9C' }} />
             </Box>
           ) : (
-            <ServiceEditor service={content} textFields={textFields} />
+            <Editor
+              content={content}
+              textFields={textFields}
+              navPath="services"
+            />
           )}
         </Box>
       </Box>

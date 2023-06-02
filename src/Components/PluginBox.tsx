@@ -6,13 +6,7 @@ import Stack from '@mui/material/Stack';
 import ExtensionSharpIcon from '@mui/icons-material/ExtensionSharp';
 import { makeStyles } from '@mui/styles';
 import { styled } from '@mui/material/styles';
-
-type PluginBoxContainerProps = {
-  icon: React.ReactNode;
-  header: string;
-  chips: { name: string; flag: boolean }[];
-  coloredChipNames: string[];
-};
+import { PluginBoxContainerProps } from '../interfaces';
 
 const BoxHeader = styled(Box)({
   display: 'flex',

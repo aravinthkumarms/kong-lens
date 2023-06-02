@@ -7,19 +7,9 @@ import {
   ListItemText,
 } from '@mui/material';
 import * as React from 'react';
+import { navPanelProps } from '../../interfaces';
 
-interface navProps {
-  value: string;
-  icon: JSX.Element;
-}
-
-interface Props {
-  list: navProps[];
-  cur: navProps;
-  isNew: boolean;
-}
-
-const NavPanel = ({ list, cur, isNew }: Props): JSX.Element => {
+const NavPanel = ({ list, cur, isNew }: navPanelProps): JSX.Element => {
   const [current, setCurrent] = React.useState(cur.value);
   const [count, setCount] = React.useState(0);
   const handleCurrent = (value: string): void => {

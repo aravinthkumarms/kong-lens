@@ -6,7 +6,7 @@ import MaterialReactTable, {
   MRT_Row,
 } from 'material-react-table';
 import { ActionIcon, TextInput } from '@mantine/core';
-import { IconTrash, IconEdit } from '@tabler/icons-react';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   CssBaseline,
   Divider,
@@ -17,15 +17,18 @@ import {
   Tooltip,
   DialogTitle,
 } from '@mui/material';
+
 import useAwaitableComponent from 'use-awaitable-component';
 import { useNavigate } from 'react-router-dom';
+import { Delete } from '@mui/icons-material';
 import { DELETE, GET } from '../Helpers/ApiHelpers';
 import { Service } from '../Mocks/Service.mock';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
 import { BASE_API_URL } from '../Shared/constants';
-import { snackProp } from '../Components/Features/ServiceEditor';
+import { snackMessageProp } from '../interfaces';
 import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
+import { RawView } from '../Components/Features/RawView';
 // export type Service = {
 //   id: string;
 //   firstName: string;
@@ -124,11 +127,12 @@ const Services = (): JSX.Element => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const deleteRow = useRef(false);
   const [open, setOpen] = useState(false);
-  const [snack, setSnack] = React.useState<snackProp>({
+  const [snack, setSnack] = React.useState<snackMessageProp>({
     message: '',
     severity: 'success',
   });
   const [promise, setPromise] = useState<unknown>();
+  const [showRaw, setShowRaw] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, execute, resolve, reject, reset] = useAwaitableComponent();
   const [tableData, setTableData] = useState<Service[]>([]);
@@ -179,7 +183,7 @@ const Services = (): JSX.Element => {
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
-            if (response.status === 202) {
+            if (response.status === 204) {
               setSnack({
                 message: 'Successfully deleted the service',
                 severity: 'info',
@@ -190,8 +194,10 @@ const Services = (): JSX.Element => {
           })
           .catch((err) => {
             setSnack({
-              message: err.response.data.message,
-              severity: 'info',
+              message:
+                err.response.data.message ||
+                'Unable to delete the record, Please try again!',
+              severity: 'error',
             });
           });
         setOpen(true);
@@ -200,6 +206,11 @@ const Services = (): JSX.Element => {
     },
     [tableData]
   );
+
+  const handleRawView = (): void => {
+    setShowRaw((prev) => !prev);
+    console.log(showRaw);
+  };
 
   const handleAwaitModal = async (row: MRT_Row<Service>): Promise<void> => {
     setConfirmDialogOpen(true);
@@ -436,20 +447,29 @@ const Services = (): JSX.Element => {
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
         renderRowActions={({ row, table }) => (
-          <Box sx={{ display: 'flex', gap: '16px' }}>
-            <Tooltip arrow placement="left" title="Edit">
-              <ActionIcon onClick={() => table.setEditingRow(row)}>
-                <IconEdit />
-              </ActionIcon>
+          <Box sx={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <Tooltip arrow placement="left" title="Raw">
+              <>
+                <VisibilityIcon
+                  sx={{ cursor: 'pointer' }}
+                  onClick={handleRawView}
+                />
+                <RawView
+                  id={row.original.id}
+                  open={showRaw}
+                  onClose={handleRawView}
+                  useCase="services"
+                />
+              </>
             </Tooltip>
-            <Tooltip arrow placement="right" title="Delete">
+            <Tooltip arrow placement="right-end" title="Delete">
               <ActionIcon
                 color="red"
                 onClick={() => {
                   handleAwaitModal(row);
                 }}
               >
-                <IconTrash />
+                <Delete />
               </ActionIcon>
             </Tooltip>
           </Box>

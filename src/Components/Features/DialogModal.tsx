@@ -4,20 +4,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Button, Dialog } from '@mui/material';
-
-type Props = {
-  description: string;
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-};
+import { DialogModalProps } from '../../interfaces';
 
 const ConfirmDialogModal = ({
   description,
   open,
   onClose,
   onConfirm,
-}: Props): JSX.Element => (
+}: DialogModalProps): JSX.Element => (
   <div>
     <Dialog
       open={open}
@@ -47,7 +41,7 @@ export default function DialogModal({
   open,
   onClose,
   onConfirm,
-}: Props): JSX.Element {
+}: DialogModalProps): JSX.Element {
   return (
     <ConfirmDialogModal
       open={open}

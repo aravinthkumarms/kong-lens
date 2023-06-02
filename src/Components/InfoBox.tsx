@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { InfoBoxProps } from '../interfaces';
 
 // Define styles for the box header
 const BoxHeader = styled(Box)({
@@ -17,17 +18,6 @@ const BoxHeader = styled(Box)({
 const BoxIcon = styled(Box)({
   marginRight: '0.5rem',
 });
-
-interface KeyValue {
-  key: string;
-  value: string;
-}
-
-interface InfoBoxProps {
-  icon: React.ReactNode;
-  name: string;
-  keyValues: KeyValue[];
-}
 
 // Define the box component
 export default function InfoBox({

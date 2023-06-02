@@ -3,6 +3,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Service } from '../Mocks/Service.mock';
 
 export const stateInterface: Service = {
+  id: '',
   created_at: 0,
   updated_at: 0,
   name: '',

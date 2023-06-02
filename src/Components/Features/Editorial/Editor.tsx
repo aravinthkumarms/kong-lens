@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  AlertColor,
   Box,
   Button,
   CircularProgress,
@@ -9,21 +8,14 @@ import {
   styled,
 } from '@mui/material';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { BASE_API_URL } from '../../Shared/constants';
-import { POST, PATCH } from '../../Helpers/ApiHelpers';
-import { ServiceDetails } from './ServiceDetail';
-import { SnackBarAlert } from './SnackBarAlert';
-
-interface keyValue {
-  key: string;
-  value: string;
-  type: string;
-}
-
-interface Props {
-  service: ServiceDetails;
-  textFields: keyValue[];
-}
+import { BASE_API_URL } from '../../../Shared/constants';
+import { POST, PATCH } from '../../../Helpers/ApiHelpers';
+import { SnackBarAlert } from '../SnackBarAlert';
+import {
+  EditorProps,
+  snackMessageProp,
+  ServiceDetails,
+} from '../../../interfaces';
 
 const StyledButton = styled(Button)({
   backgroundColor: '#1ABB9C',
@@ -33,7 +25,7 @@ const StyledButton = styled(Button)({
   },
 });
 
-const inputLabelProps = {
+const inputLabelStyle = {
   shrink: true,
   style: {
     fontSize: 20,
@@ -42,17 +34,12 @@ const inputLabelProps = {
   },
 };
 
-export type snackProp = {
-  message: string;
-  severity: AlertColor;
-};
-
-const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
-  const [currentService, setCurrentService] =
-    React.useState<ServiceDetails>(service);
+const Editor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
+  const [currentContent, setCurrentContent] =
+    React.useState<typeof content>(content);
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [snack, setSnack] = React.useState<snackProp>({
+  const [snack, setSnack] = React.useState<snackMessageProp>({
     message: '',
     severity: 'success',
   });
@@ -66,7 +53,7 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
   };
 
   const handleOnCancel = (): void => {
-    setCurrentService(service);
+    setCurrentContent(content);
   };
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -78,8 +65,8 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
   }) => {
     e.preventDefault;
     const { name, type, value } = e.target;
-    setCurrentService({
-      ...currentService,
+    setCurrentContent({
+      ...currentContent,
       [name]: type === 'number' ? parseInt(value, 10) : value,
     });
   };
@@ -87,12 +74,12 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const getService = async () => {
+    const postService = async () => {
       if (paramValue === 'true') {
         setLoading(true);
         await POST({
           url: `${BASE_API_URL}/services`,
-          body: currentService,
+          body: currentContent,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
@@ -118,8 +105,8 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
       } else {
         setLoading(true);
         await PATCH({
-          url: `${BASE_API_URL}/services/${id}`,
-          body: currentService,
+          url: `${BASE_API_URL}/${navPath}/${id}`,
+          body: currentContent,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
@@ -141,7 +128,7 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
         setLoading(false);
       }
     };
-    getService();
+    postService();
   };
 
   return (
@@ -173,24 +160,25 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
                 margin: 'auto',
               }}
             >
-              {textFields.map((text) => (
+              {textFields.map((text, index) => (
                 <div
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={index}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
                   }}
                 >
                   <TextField
-                    key={text.key}
                     label={
                       text.key.charAt(0).toUpperCase() +
                       text.key.slice(1).replace('_', ' ')
                     }
                     type={text.type}
-                    InputLabelProps={inputLabelProps}
+                    InputLabelProps={inputLabelStyle}
                     name={text.key}
                     variant="standard"
-                    value={currentService[text.key as keyof ServiceDetails]}
+                    value={currentContent[text.key as keyof typeof content]}
                     disabled={text.key === 'id'}
                     onChange={handleOnChange}
                   />
@@ -224,4 +212,4 @@ const ServiceEditor = ({ service, textFields }: Props): JSX.Element => {
   );
 };
 
-export default ServiceEditor;
+export default Editor;
