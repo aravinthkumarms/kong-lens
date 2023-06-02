@@ -54,7 +54,6 @@ const RouteDetail = (): JSX.Element => {
         url: `${BASE_API_URL}/routes/${id}/`,
         headers: { 'Access-Control-Allow-Origin': '*' },
       });
-      console.log(data);
       setContent(preProcess(data));
       setLoading(false);
     };
@@ -188,11 +187,7 @@ const RouteDetail = (): JSX.Element => {
               <CircularProgress sx={{ margin: 'auto', color: '#1ABB9C' }} />
             </Box>
           ) : (
-            <RouteEditor
-              content={content}
-              textFields={textFields}
-              navPath="routes"
-            />
+            <RouteEditor content={content} textFields={textFields} />
           )}
         </Box>
       </Box>

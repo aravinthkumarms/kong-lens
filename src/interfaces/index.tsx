@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AlertColor } from '@mui/material';
 
 export interface RouteDetails {
@@ -82,7 +83,6 @@ export type ServiceDetails = {
 export type EditorProps = {
   content: RouteDetails;
   textFields: keyValueType[];
-  navPath: string;
 };
 
 export type ServiceEditorProps = {

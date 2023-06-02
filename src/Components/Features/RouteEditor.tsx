@@ -84,7 +84,7 @@ function ExampleTrackChild({ yes, propKey }: toggleProps): JSX.Element {
   );
 }
 
-const RouteEditor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
+const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
   const [currentContent, setCurrentContent] =
     React.useState<RouteDetails>(content);
   const [loading, setLoading] = React.useState(false);
@@ -141,6 +141,7 @@ const RouteEditor = ({ content, textFields, navPath }: EditorProps): JSX.Element
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const postService = async (): Promise<any> => {
       setLoading(true);
       const request: RouteDetails = currentContent;
