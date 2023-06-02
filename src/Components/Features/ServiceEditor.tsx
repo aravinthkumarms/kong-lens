@@ -8,14 +8,14 @@ import {
   styled,
 } from '@mui/material';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { BASE_API_URL } from '../../../Shared/constants';
-import { POST, PATCH } from '../../../Helpers/ApiHelpers';
-import { SnackBarAlert } from '../SnackBarAlert';
+import { BASE_API_URL } from '../../Shared/constants';
+import { POST, PATCH } from '../../Helpers/ApiHelpers';
+import { SnackBarAlert } from './SnackBarAlert';
 import {
-  EditorProps,
-  snackMessageProp,
   ServiceDetails,
-} from '../../../interfaces';
+  ServiceEditorProps,
+  snackMessageProp,
+} from '../../interfaces';
 
 const StyledButton = styled(Button)({
   backgroundColor: '#1ABB9C',
@@ -34,9 +34,12 @@ const inputLabelStyle = {
   },
 };
 
-const Editor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
-  const [currentContent, setCurrentContent] =
-    React.useState<typeof content>(content);
+const ServiceEditor = ({
+  service,
+  textFields,
+}: ServiceEditorProps): JSX.Element => {
+  const [currentService, setCurrentService] =
+    React.useState<ServiceDetails>(service);
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [snack, setSnack] = React.useState<snackMessageProp>({
@@ -53,7 +56,7 @@ const Editor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
   };
 
   const handleOnCancel = (): void => {
-    setCurrentContent(content);
+    setCurrentService(service);
   };
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -65,8 +68,8 @@ const Editor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
   }) => {
     e.preventDefault;
     const { name, type, value } = e.target;
-    setCurrentContent({
-      ...currentContent,
+    setCurrentService({
+      ...currentService,
       [name]: type === 'number' ? parseInt(value, 10) : value,
     });
   };
@@ -79,7 +82,7 @@ const Editor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
         setLoading(true);
         await POST({
           url: `${BASE_API_URL}/services`,
-          body: currentContent,
+          body: currentService,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
@@ -105,8 +108,8 @@ const Editor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
       } else {
         setLoading(true);
         await PATCH({
-          url: `${BASE_API_URL}/${navPath}/${id}`,
-          body: currentContent,
+          url: `${BASE_API_URL}/services/${id}`,
+          body: currentService,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
@@ -178,7 +181,7 @@ const Editor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
                     InputLabelProps={inputLabelStyle}
                     name={text.key}
                     variant="standard"
-                    value={currentContent[text.key as keyof typeof content]}
+                    value={currentService[text.key as keyof typeof service]}
                     disabled={text.key === 'id'}
                     onChange={handleOnChange}
                   />
@@ -212,4 +215,4 @@ const Editor = ({ content, textFields, navPath }: EditorProps): JSX.Element => {
   );
 };
 
-export default Editor;
+export default ServiceEditor;

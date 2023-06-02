@@ -32,6 +32,10 @@ function App(): JSX.Element {
           path="/services/:id/"
           element={<MiniDrawer path="servicesDetail" />}
         />
+        <Route
+          path="/routes/:id/"
+          element={<MiniDrawer path="routesDetail" />}
+        />
         {/* <Route path="*" element={<Navigate to="/dashboard" />} /> */}
       </Routes>
     </BrowserRouter>

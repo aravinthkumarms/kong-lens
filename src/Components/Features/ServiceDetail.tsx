@@ -7,11 +7,11 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import CircularProgress from '@mui/material/CircularProgress';
 import PageHeader from './PageHeader';
 import NavPanel from './MiniNavPanel';
+import ServiceEditor from './ServiceEditor';
 import MiniPageHeader from './MiniPageHeader';
 import { BASE_API_URL } from '../../Shared/constants';
 import { GET } from '../../Helpers/ApiHelpers';
 import { ServiceDetails, keyValueType, navBarProps } from '../../interfaces';
-import Editor from './Editorial/Editor';
 
 const ServiceDetail = (): JSX.Element => {
   const { id } = useParams();
@@ -135,11 +135,7 @@ const ServiceDetail = (): JSX.Element => {
               <CircularProgress sx={{ margin: 'auto', color: '#1ABB9C' }} />
             </Box>
           ) : (
-            <Editor
-              content={content}
-              textFields={textFields}
-              navPath="services"
-            />
+            <ServiceEditor service={content} textFields={textFields} />
           )}
         </Box>
       </Box>

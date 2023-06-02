@@ -147,7 +147,7 @@ const Routes = (): JSX.Element => {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       const deleteData = async () => {
         await DELETE({
-          url: `${BASE_API_URL}/services/${row.original.id}`,
+          url: `${BASE_API_URL}/routes/${row.original.id}`,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
@@ -265,7 +265,7 @@ const Routes = (): JSX.Element => {
         size: 140,
         muiTableBodyCellProps: ({ cell }) => ({
           onClick: () => {
-            navigate(`/routes/${cell.row.original.id}/read`);
+            navigate(`/routes/${cell.row.original.id}/`);
           },
           sx: {
             cursor: 'pointer',

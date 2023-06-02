@@ -1,27 +1,27 @@
 import { AlertColor } from '@mui/material';
 
 export interface RouteDetails {
-  snis?: string[] | string | unknown;
-  strip_path: boolean;
-  tags?: string[] | string | unknown;
-  path_handling: string;
-  service: any;
-  paths: string[] | string | unknown;
-  methods: string[] | string | unknown;
-  sources?: string[] | unknown;
-  destinations?: string[] | unknown;
-  request_buffering: boolean;
-  response_buffering: boolean;
-  protocols: string[];
-  https_redirect_status_code: number;
-  preserve_host: boolean;
-  regex_priority: number;
-  headers: object | unknown;
-  id: string;
-  hosts: string[];
-  name: string;
-  created_at: Date | string | number;
-  updated_at: number;
+  snis: any;
+  strip_path: any | boolean;
+  tags: any;
+  path_handling: any;
+  service?: any;
+  paths: any;
+  methods: any;
+  sources: any;
+  destinations: any;
+  request_buffering?: any;
+  response_buffering?: any;
+  protocols: any;
+  https_redirect_status_code: any;
+  preserve_host: any;
+  regex_priority: any;
+  headers: any;
+  id?: any;
+  hosts: any;
+  name: any;
+  created_at?: Date | string | number;
+  updated_at?: Date | string | number;
 }
 
 export type Menus = {
@@ -80,9 +80,14 @@ export type ServiceDetails = {
 };
 
 export type EditorProps = {
-  content: ServiceDetails | RouteDetails;
+  content: RouteDetails;
   textFields: keyValueType[];
   navPath: string;
+};
+
+export type ServiceEditorProps = {
+  service: ServiceDetails;
+  textFields: keyValueType[];
 };
 
 export type snackMessageProp = {
@@ -130,4 +135,9 @@ export type DetailViewerProps = {
   textFields: keyValueType[];
   pageHeader: string;
   pageDesc: string;
+};
+
+export type toggleProps = {
+  yes: boolean;
+  propKey: string;
 };

@@ -40,6 +40,7 @@ import Connections from './Connections';
 import Settings from './Settings';
 import Services from './Services';
 import ServiceDetail from '../Components/Features/ServiceDetail';
+import RouteDetail from '../Components/Features/RouteDetail';
 
 const drawerWidth = 240;
 
@@ -140,6 +141,7 @@ const renderPages: { [page: string]: JSX.Element } = {
   snapshots: <Info />,
   settings: <Settings />,
   servicesDetail: <ServiceDetail />,
+  routesDetail: <RouteDetail />,
 };
 
 // const getPage = ({ props }: any) => {
