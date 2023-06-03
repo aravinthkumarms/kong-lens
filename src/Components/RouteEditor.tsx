@@ -31,33 +31,15 @@ const StyledButton = styled(Button)({
   },
 });
 
-const inputLabelStyle = {
-  shrink: true,
-  style: {
-    fontSize: 20,
-    color: '#1ABB9C',
-    margin: 'auto',
-  },
-};
-
-const toggleData = {
-  strip_path: false,
-  preserve_host: false,
-};
-
-function ExampleTrackChild({ yes, propKey }: toggleProps): JSX.Element {
+function ExampleTrackChild({ yes, onChange }: toggleProps): JSX.Element {
   const [checked, setChecked] = React.useState<boolean>(yes);
-  if (propKey === 'strip_path') toggleData.strip_path = yes;
-  else toggleData.preserve_host = yes;
   return (
     <Switch
       checked={checked}
       onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.checked;
         setChecked(value);
-        if (propKey === 'strip_path')
-          toggleData.strip_path = !toggleData.strip_path;
-        else toggleData.preserve_host = !toggleData.preserve_host;
+        onChange();
       }}
       slotProps={{
         track: {
@@ -94,6 +76,10 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
     message: '',
     severity: 'success',
   });
+  const [toggleData, setToggleData] = React.useState({
+    strip_path: false,
+    preserve_host: false,
+  });
   const { id } = useParams();
   const handleClose = (): void => {
     setOpen(false);
@@ -120,6 +106,9 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
 
   const preProcess = (data: RouteDetails): RouteDetails => {
     const keyList = Object.keys(data);
+    toggleData.preserve_host = data.preserve_host;
+    toggleData.strip_path = data.strip_path;
+    setToggleData(toggleData);
     for (let i = 0; i < keyList.length; i += 1) {
       const key = keyList[i];
       if (
@@ -131,6 +120,12 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
         data[key as keyof typeof data] = [];
     }
     return data;
+  };
+
+  const handleToggle = (key: string): void => {
+    if (key === 'strip_path') toggleData.strip_path = !toggleData.strip_path;
+    else toggleData.preserve_host = !toggleData.preserve_host;
+    setToggleData(toggleData);
   };
 
   const handleListChange = (
@@ -235,7 +230,7 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
                     <div style={{ display: 'block' }}>
                       <ExampleTrackChild
                         yes={currentContent[text.key as keyof typeof content]}
-                        propKey={text.key}
+                        onChange={() => handleToggle(text.key)}
                       />
                     </div>
                   )}

@@ -160,7 +160,7 @@ export type DetailViewerProps = {
 
 export type toggleProps = {
   yes: boolean;
-  propKey: string;
+  onChange: VoidFunction;
 };
 
 export type TagProps = {
