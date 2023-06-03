@@ -40,31 +40,9 @@ const Routes = (): JSX.Element => {
   const [promise, setPromise] = useState<unknown>();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, execute, resolve, reject, reset] = useAwaitableComponent();
-  const [showRaw, setShowRaw] = useState(false);
-
-  const getService = async (id: string) => {
-    let service = {};
-    await GET({
-      url: `${BASE_API_URL}/services/${id}`,
-      headers: { 'Access-Control-Allow-Origin': '*' },
-    })
-      .then((response) => {
-        service = response.data;
-        setSnack({
-          message: 'Successfully fetched records',
-          severity: 'success',
-        });
-      })
-      .catch((err) => {
-        setSnack({
-          message:
-            err.response.data.message ||
-            'Unable to fetch records, Please try again!',
-          severity: 'error',
-        });
-      });
-    return service;
-  };
+  const [showRaw, setShowRaw] = useState<Map<string, boolean>>(
+    new Map<string, boolean>()
+  );
 
   const [tableData, setTableData] = useState<RouteDetails[]>([]);
   const [validationErrors, setValidationErrors] = useState<{
@@ -110,6 +88,9 @@ const Routes = (): JSX.Element => {
                 });
               }
               setTableData(data);
+              for (let i = 0; i < data.length; i += 1) {
+                showRaw.set(data[i].id, false);
+              }
             }
             setSnack({
               message: 'Successfully fetched records',
@@ -129,10 +110,11 @@ const Routes = (): JSX.Element => {
     };
     getRoutes();
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  const handleRawView = () => {
-    setShowRaw((prev) => !prev);
+  const handleRawView = (id: string, value: boolean): void => {
+    setShowRaw((map) => new Map(map.set(id, value)));
   };
 
   const handleDeleteRow = useCallback(
@@ -381,21 +363,19 @@ const Routes = (): JSX.Element => {
         }}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
-        renderRowActions={({ row, table }) => (
+        renderRowActions={({ row }) => (
           <Box sx={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <Tooltip arrow placement="left" title="Raw">
               <>
                 <VisibilityIcon
-                  key={0}
                   sx={{ cursor: 'pointer' }}
-                  onClick={handleRawView}
+                  onClick={() => handleRawView(row.original.id, true)}
                 />
-                {/* <RawView
-                  id={row.original.id}
-                  open={showRaw}
-                  onClose={handleRawView}
-                  useCase="routes"
-                /> */}
+                <RawView
+                  json={row.original}
+                  open={showRaw.get(row.original.id) as boolean}
+                  onClose={() => handleRawView(row.original.id, false)}
+                />
               </>
             </Tooltip>
             <Tooltip arrow placement="right-end" title="Delete">

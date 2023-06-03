@@ -54,9 +54,10 @@ function ExampleTrackChild({ yes, propKey }: toggleProps): JSX.Element {
       checked={checked}
       onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.checked;
-        if (propKey === 'strip_path') toggleData.strip_path = value;
-        else toggleData.preserve_host = value;
         setChecked(value);
+        if (propKey === 'strip_path')
+          toggleData.strip_path = !toggleData.strip_path;
+        else toggleData.preserve_host = !toggleData.preserve_host;
       }}
       slotProps={{
         track: {
@@ -139,16 +140,28 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
     currentContent[key] = value;
   };
 
+  const postProcess = (request: RouteDetails): RouteDetails => {
+    if (
+      request.protocols.length !== 0 &&
+      request.sources.length === 0 &&
+      request.destinations.length === 0
+    ) {
+      request.sources = null;
+      request.destinations = null;
+    }
+    if (request.headers.length === 0) request.headers = {};
+    request.preserve_host = toggleData.preserve_host;
+    request.strip_path = toggleData.strip_path;
+    console.log(toggleData);
+    return request;
+  };
+
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const postService = async (): Promise<any> => {
       setLoading(true);
-      const request: RouteDetails = currentContent;
-
-      if (request.headers.length === 0) request.headers = {};
-      request.preserve_host = toggleData.preserve_host;
-      request.strip_path = toggleData.strip_path;
+      const request = postProcess(currentContent);
       await PATCH({
         url: `${BASE_API_URL}/routes/${id}`,
         body: request,
@@ -167,7 +180,6 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
               message: response.data.message || 'Could not able to modify data',
               severity: 'error',
             });
-            setCurrentContent(request);
           }
         })
         .catch((err) => {
@@ -176,7 +188,7 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
               err.response.data.message || 'Could not able to modify data',
             severity: 'error',
           });
-          setCurrentContent(request);
+          setCurrentContent(preProcess(request));
         });
       setOpen(true);
       setLoading(false);

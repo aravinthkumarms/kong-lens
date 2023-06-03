@@ -16,20 +16,20 @@ const RouteDetail = (): JSX.Element => {
   const { id } = useParams();
   const [content, setContent] = React.useState<RouteDetails>({
     name: '',
-    tags: '',
-    hosts: '',
-    paths: '',
-    headers: '',
+    tags: [],
+    hosts: [],
+    paths: [],
+    headers: {},
     path_handling: '',
     https_redirect_status_code: 426,
     regex_priority: 0,
-    methods: '',
+    methods: [],
     strip_path: true,
     preserve_host: false,
-    protocols: '',
-    snis: '',
-    sources: '',
-    destinations: '',
+    protocols: [],
+    snis: [],
+    sources: [],
+    destinations: [],
   });
   const [loading, setLoading] = React.useState(true);
   const preProcess = (data: RouteDetails): RouteDetails => {

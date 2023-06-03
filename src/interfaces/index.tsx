@@ -124,10 +124,9 @@ export type PageHeaderDescProps = {
 };
 
 export type RawViewProps = {
-  id: string;
+  json: object;
   open: boolean;
   onClose: VoidFunction;
-  useCase: string;
 };
 
 export type DetailViewerProps = {

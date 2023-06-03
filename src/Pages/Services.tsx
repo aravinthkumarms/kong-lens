@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import MaterialReactTable, {
   MaterialReactTableProps,
-  MRT_Cell,
   MRT_ColumnDef,
   MRT_Row,
 } from 'material-react-table';
@@ -29,14 +28,6 @@ import { BASE_API_URL } from '../Shared/constants';
 import { snackMessageProp } from '../interfaces';
 import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
 import { RawView } from '../Components/Features/RawView';
-// export type Service = {
-//   id: string;
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   age: number;
-//   state: string;
-// };
 
 // example of creating a mantine dialog modal for creating new rows
 export const CreateNewAccountModal = ({
@@ -132,7 +123,9 @@ const Services = (): JSX.Element => {
     severity: 'success',
   });
   const [promise, setPromise] = useState<unknown>();
-  const [showRaw, setShowRaw] = useState(false);
+  const [showRaw, setShowRaw] = useState<Map<string, boolean>>(
+    new Map<string, boolean>()
+  );
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, execute, resolve, reject, reset] = useAwaitableComponent();
   const [tableData, setTableData] = useState<Service[]>([]);
@@ -149,7 +142,11 @@ const Services = (): JSX.Element => {
       })
         .then((response) => {
           if (response.status === 200) {
-            setTableData(response.data.data);
+            const { data } = response.data;
+            setTableData(data);
+            for (let i = 0; i < data.length; i += 1) {
+              showRaw.set(data[i].id, false);
+            }
           }
           setSnack({
             message: 'Successfully fetched records',
@@ -158,13 +155,16 @@ const Services = (): JSX.Element => {
         })
         .catch((err) => {
           setSnack({
-            message: 'Unable to fetch records, Please try again!',
+            message:
+              err.response.data.message ||
+              'Unable to fetch records, Please try again!',
             severity: 'error',
           });
         });
-      setOpen(true);
+      setOpen(true);  
     };
     getServices();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDeleteRow = useCallback(
@@ -207,9 +207,8 @@ const Services = (): JSX.Element => {
     [tableData]
   );
 
-  const handleRawView = (): void => {
-    setShowRaw((prev) => !prev);
-    console.log(showRaw);
+  const handleRawView = (id: string, value: boolean): void => {
+    setShowRaw((map) => new Map(map.set(id, value)));
   };
 
   const handleAwaitModal = async (row: MRT_Row<Service>): Promise<void> => {
@@ -244,46 +243,6 @@ const Services = (): JSX.Element => {
     setValidationErrors({});
   };
 
-  const validateRequired = (value: string): boolean => !!value.length;
-  const validateEmail = (email: string): boolean | unknown =>
-    !!email.length &&
-    email
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  const validateAge = (age: number): boolean => age >= 18 && age <= 50;
-
-  const getCommonEditTextInputProps = useCallback(
-    (
-      cell: MRT_Cell<Service>
-    ): MRT_ColumnDef<Service>['muiTableBodyCellEditTextFieldProps'] => ({
-      onBlur: (event) => {
-        const isValid =
-          // eslint-disable-next-line no-nested-ternary
-          cell.column.id === 'email'
-            ? validateEmail(event.target.value)
-            : cell.column.id === 'age'
-            ? validateAge(+event.target.value)
-            : validateRequired(event.target.value);
-        if (!isValid) {
-          // set validation error for cell if invalid
-          setValidationErrors({
-            ...validationErrors,
-            [cell.id]: `${cell.column.columnDef.header} is required`,
-          });
-        } else {
-          // remove validation error for cell if valid
-          delete validationErrors[cell.id];
-          setValidationErrors({
-            ...validationErrors,
-          });
-        }
-      },
-    }),
-    [validationErrors]
-  );
-
   const columns = useMemo<MRT_ColumnDef<Service>[]>(
     () => [
       {
@@ -310,80 +269,48 @@ const Services = (): JSX.Element => {
             color: '#438BCA',
           },
         }),
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-        }),
       },
       {
         accessorKey: 'protocol',
         header: 'Protocol',
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-        }),
       },
       {
         accessorKey: 'host',
         header: 'Host',
         size: 140,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-        }),
       },
       {
         accessorKey: 'port',
         header: 'Port',
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       {
         accessorKey: 'path',
         header: 'Path',
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-        }),
       },
       {
         accessorKey: 'retries',
         header: 'Retries',
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       {
         accessorKey: 'read_timeout',
         header: 'Read Timeout',
         size: 80,
         enableHiding: true,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       {
         accessorKey: 'write_timeout',
         header: 'Write Timeout',
         size: 80,
         enableHiding: true,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       {
         accessorKey: 'connect_timeout',
         header: 'Connect Timeout',
         size: 80,
         enableHiding: true,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       // {
       //   accessorKey: 'path',
@@ -398,7 +325,7 @@ const Services = (): JSX.Element => {
       //   // },
       // },
     ],
-    [getCommonEditTextInputProps, navigate]
+    [navigate]
   );
 
   return (
@@ -446,19 +373,18 @@ const Services = (): JSX.Element => {
         }}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
-        renderRowActions={({ row, table }) => (
+        renderRowActions={({ row }) => (
           <Box sx={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <Tooltip arrow placement="left" title="Raw">
               <>
                 <VisibilityIcon
                   sx={{ cursor: 'pointer' }}
-                  onClick={handleRawView}
+                  onClick={() => handleRawView(row.original.id, true)}
                 />
                 <RawView
-                  id={row.original.id}
-                  open={showRaw}
-                  onClose={handleRawView}
-                  useCase="services"
+                  json={row.original}
+                  open={showRaw.get(row.original.id) as boolean}
+                  onClose={() => handleRawView(row.original.id, false)}
                 />
               </>
             </Tooltip>

@@ -1,89 +1,66 @@
-import React, { useState } from 'react';
-import { ModalDialog, ModalClose, ModalDialogProps } from '@mui/joy';
-import { Modal, Typography } from '@mui/material';
-import { BASE_API_URL } from '../../Shared/constants';
-import { GET } from '../../Helpers/ApiHelpers';
-import { RawViewProps, snackMessageProp } from '../../interfaces';
-import { SnackBarAlert } from './SnackBarAlert';
+import React from 'react';
+import {
+  ModalClose,
+  Sheet,
+  Typography,
+  Modal,
+  List,
+  ModalOverflow,
+} from '@mui/joy';
 
-export const RawView = ({
-  id,
-  open,
-  onClose,
-  useCase,
-}: RawViewProps): JSX.Element => {
-  const [rawData, setRawData] = useState();
-  const [layout, setLayout] = React.useState<
-    ModalDialogProps['layout'] | undefined
-  >(undefined);
-  const [snack, setSnack] = React.useState<snackMessageProp>({
-    message: '',
-    severity: 'success',
-  });
-  const [snackOpen, setSnackOpen] = useState(false);
-  React.useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const getServices = async () => {
-      await GET({
-        url: `${BASE_API_URL}/${useCase}/${id}`,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            // eslint-disable-next-line prefer-destructuring
-            setRawData(response.data);
-          }
-          setSnack({
-            message: 'Successfully fetched raw data',
-            severity: 'success',
-          });
-        })
-        .catch((err) => {
-          setSnack({
-            message:
-              err.response.data.message ||
-              'Unable to fetch records, Please try again!',
-            severity: 'error',
-          });
-        });
-      setSnackOpen(true);
-    };
-    getServices();
-  }, [id, useCase]);
+import { RawViewProps } from '../../interfaces';
+
+export const RawView = ({ json, open, onClose }: RawViewProps): JSX.Element => {
   return (
-    <>
-      <SnackBarAlert
-        open={snackOpen}
-        message={snack.message}
-        severity={snack.severity}
-        handleClose={() => {
-          setSnackOpen(false);
-        }}
-      />
-      <Modal
-        open={open}
-        onClose={() => {
-          onClose();
-          setLayout(undefined);
-        }}
-      >
-        <ModalDialog
-          aria-labelledby="layout-modal-title"
-          aria-describedby="layout-modal-description"
+    <Modal
+      aria-labelledby="modal-title"
+      aria-describedby="modal-desc"
+      open={open}
+      onClose={onClose}
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <ModalOverflow sx={{ maxWidth: '800px', margin: 'auto' }}>
+        <Sheet
+          variant="outlined"
           sx={{
-            border: 'solid 2px #1AAA9C',
+            maxWidth: 'auto',
+            borderRadius: 'md',
+            p: 3,
+            boxShadow: 'lg',
+            border: '3px solid #1ABB9C',
+            overflowY: 'scroll',
           }}
-          layout={layout}
         >
           <ModalClose />
-          <Typography sx={{ fontWeight: 'bold' }}>Raw View</Typography>
-          <pre>
-            <Typography id="layout-modal-description">
-              {JSON.stringify(rawData, undefined, 2)}
-            </Typography>
-          </pre>
-        </ModalDialog>
-      </Modal>
-    </>
+          <Typography
+            component="h2"
+            id="modal-title"
+            level="h4"
+            textColor="inherit"
+            fontWeight="lg"
+            mb={1}
+          >
+            Raw View
+          </Typography>
+          <List
+            sx={{
+              overflow: 'scroll',
+              mx: 'calc(-1 * var(--ModalDialog-padding))',
+              px: 'var(--ModalDialog-padding)',
+            }}
+          >
+            <pre>
+              <Typography id="modal-desc" textColor="text.tertiary">
+                {JSON.stringify(json, undefined, 2)}
+              </Typography>
+            </pre>
+          </List>
+        </Sheet>
+      </ModalOverflow>
+    </Modal>
   );
 };
