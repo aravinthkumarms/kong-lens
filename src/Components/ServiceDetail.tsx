@@ -5,19 +5,21 @@ import { IconInfoCircle } from '@tabler/icons-react';
 import AltRouteIcon from '@mui/icons-material/AltRoute';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import CircularProgress from '@mui/material/CircularProgress';
-import PageHeader from './PageHeader';
-import NavPanel from './MiniNavPanel';
+import PageHeader from './Features/PageHeader';
+import NavPanel from './Features/MiniNavPanel';
 import ServiceEditor from './ServiceEditor';
-import MiniPageHeader from './MiniPageHeader';
-import { BASE_API_URL } from '../../Shared/constants';
-import { GET } from '../../Helpers/ApiHelpers';
-import { ServiceDetails, keyValueType, navBarProps } from '../../interfaces';
+import MiniPageHeader from './Features/MiniPageHeader';
+import { BASE_API_URL } from '../Shared/constants';
+import { GET } from '../Helpers/ApiHelpers';
+import { ServiceDetails, keyValueType, navBarProps } from '../interfaces';
 
 const ServiceDetail = (): JSX.Element => {
   const { id } = useParams();
   const { search } = useLocation();
   const [content, setContent] = React.useState<ServiceDetails>({
+    id: '',
     name: '',
+    description: '',
     retries: 5,
     protocol: '',
     host: '',
@@ -26,6 +28,9 @@ const ServiceDetail = (): JSX.Element => {
     connect_timeout: 60000,
     write_timeout: 60000,
     read_timeout: 60000,
+    tags: [],
+    clientCertificate: '',
+    ca_certificates: '',
   });
   const [loading, setLoading] = React.useState(true);
   const query = new URLSearchParams(search);
@@ -52,6 +57,12 @@ const ServiceDetail = (): JSX.Element => {
   ];
   const textFields: keyValueType[] = [
     { key: 'name', value: 'The service name.', type: 'text' },
+    {
+      key: 'description',
+      value: 'An optional service description.',
+      type: 'text',
+    },
+    { key: 'tags', value: 'Optionally add tags to the service', type: 'list' },
     {
       key: 'protocol',
       value:
@@ -99,6 +110,12 @@ const ServiceDetail = (): JSX.Element => {
       value:
         'The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server. Defaults to 60000',
       type: 'number',
+    },
+    {
+      key: 'client_certificate',
+      value:
+        'Certificate (id) to be used as client certificate while TLS handshaking to the upstream server.',
+      type: 'text',
     },
   ];
   return (

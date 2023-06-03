@@ -1,12 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AlertColor } from '@mui/material';
 
+export interface Service {
+  id: string;
+  created_at: number;
+  updated_at: number;
+  name: string;
+  retries: number;
+  protocol: string;
+  host: string;
+  port: number;
+  path: string;
+  connect_timeout: number;
+  write_timeout: number;
+  read_timeout: number;
+}
+
 export interface RouteDetails {
   snis: any;
   strip_path: any | boolean;
   tags: any;
   path_handling: any;
   service?: any;
+  service_name: any;
   paths: any;
   methods: any;
   sources: any;
@@ -68,16 +84,22 @@ export type keyValueType = {
 };
 
 export type ServiceDetails = {
-  id?: string;
-  name: string;
-  retries: number;
-  protocol: string;
-  host: string;
-  port: number;
-  path: string;
-  connect_timeout: number;
-  write_timeout: number;
-  read_timeout: number;
+  id: any;
+  name: any;
+  description: any;
+  tags: any;
+  retries: any;
+  protocol: any;
+  host: any;
+  port: any;
+  path: any;
+  connect_timeout: any;
+  write_timeout: any;
+  read_timeout: any;
+  clientCertificate: any;
+  ca_certificates?: any;
+  created_at?: Date | string | number;
+  updated_at?: Date | string | number;
 };
 
 export type EditorProps = {
@@ -139,4 +161,9 @@ export type DetailViewerProps = {
 export type toggleProps = {
   yes: boolean;
   propKey: string;
+};
+
+export type TagProps = {
+  tag: string;
+  isList: boolean;
 };

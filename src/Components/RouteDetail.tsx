@@ -4,12 +4,12 @@ import { useParams } from 'react-router-dom';
 import { IconInfoCircle } from '@tabler/icons-react';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import CircularProgress from '@mui/material/CircularProgress';
-import PageHeader from './PageHeader';
-import NavPanel from './MiniNavPanel';
-import MiniPageHeader from './MiniPageHeader';
-import { BASE_API_URL } from '../../Shared/constants';
-import { GET } from '../../Helpers/ApiHelpers';
-import { RouteDetails, keyValueType, navBarProps } from '../../interfaces';
+import PageHeader from './Features/PageHeader';
+import NavPanel from './Features/MiniNavPanel';
+import MiniPageHeader from './Features/MiniPageHeader';
+import { BASE_API_URL } from '../Shared/constants';
+import { GET } from '../Helpers/ApiHelpers';
+import { RouteDetails, keyValueType, navBarProps } from '../interfaces';
 import RouteEditor from './RouteEditor';
 
 const RouteDetail = (): JSX.Element => {
@@ -30,6 +30,7 @@ const RouteDetail = (): JSX.Element => {
     snis: [],
     sources: [],
     destinations: [],
+    service_name: '',
   });
   const [loading, setLoading] = React.useState(true);
   const preProcess = (data: RouteDetails): RouteDetails => {

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import MaterialReactTable, {
   MaterialReactTableProps,
-  MRT_Cell,
   MRT_ColumnDef,
   MRT_Row,
 } from 'material-react-table';
@@ -21,13 +20,13 @@ import useAwaitableComponent from 'use-awaitable-component';
 import { useNavigate } from 'react-router-dom';
 import { Delete } from '@mui/icons-material';
 import { DELETE, GET } from '../Helpers/ApiHelpers';
-import { Service } from '../Mocks/Service.mock';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
 import { BASE_API_URL } from '../Shared/constants';
 import { snackMessageProp, RouteDetails } from '../interfaces';
 import { RawView } from '../Components/Features/RawView';
 import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
+import { TagComponent } from '../Components/Features/TagComponent';
 
 const Routes = (): JSX.Element => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -63,9 +62,9 @@ const Routes = (): JSX.Element => {
             if (response.status === 200) {
               // eslint-disable-next-line prefer-destructuring
               const data = response.data.data;
-              const listKeys = ['protocols', 'tags', 'paths'];
+              const listKeys = ['protocols', 'paths'];
               for (let i = 0; i < data.length; i += 1) {
-                const curRouteDetails: RouteDetails | any = data[i];
+                const curRouteDetails: RouteDetails = data[i];
                 GET({
                   url: `${BASE_API_URL}/services/${curRouteDetails.service.id}`,
                   headers: { 'Access-Control-Allow-Origin': '*' },
@@ -73,17 +72,11 @@ const Routes = (): JSX.Element => {
                   curRouteDetails.service = res.data;
                   curRouteDetails.service_name = curRouteDetails.service.name;
                 });
-                listKeys.forEach((key) => {
-                  const list =
-                    curRouteDetails[key as keyof typeof curRouteDetails];
-                  if (list !== null && list !== undefined) {
-                    curRouteDetails[key as keyof typeof curRouteDetails] =
-                      list.toString();
-                    if (typeof curRouteDetails.created_at === 'number') {
-                      curRouteDetails.created_at = new Date(
-                        curRouteDetails.created_at
-                      ).toLocaleDateString();
-                    }
+                listKeys.forEach(() => {
+                  if (typeof curRouteDetails.created_at === 'number') {
+                    curRouteDetails.created_at = new Date(
+                      curRouteDetails.created_at
+                    ).toLocaleDateString();
                   }
                 });
               }
@@ -189,46 +182,6 @@ const Routes = (): JSX.Element => {
     setValidationErrors({});
   };
 
-  const validateRequired = (value: string): boolean => !!value.length;
-  const validateEmail = (email: string): boolean | unknown =>
-    !!email.length &&
-    email
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  const validateAge = (age: number): boolean => age >= 18 && age <= 50;
-
-  const getCommonEditTextInputProps = useCallback(
-    (
-      cell: MRT_Cell<Service>
-    ): MRT_ColumnDef<Service>['muiTableBodyCellEditTextFieldProps'] => ({
-      onBlur: (event) => {
-        const isValid =
-          // eslint-disable-next-line no-nested-ternary
-          cell.column.id === 'email'
-            ? validateEmail(event.target.value)
-            : cell.column.id === 'age'
-            ? validateAge(+event.target.value)
-            : validateRequired(event.target.value);
-        if (!isValid) {
-          // set validation error for cell if invalid
-          setValidationErrors({
-            ...validationErrors,
-            [cell.id]: `${cell.column.columnDef.header} is required`,
-          });
-        } else {
-          // remove validation error for cell if valid
-          delete validationErrors[cell.id];
-          setValidationErrors({
-            ...validationErrors,
-          });
-        }
-      },
-    }),
-    [validationErrors]
-  );
-  console.log(tableData);
   const columns = useMemo<MRT_ColumnDef<RouteDetails>[]>(
     () => [
       {
@@ -259,20 +212,56 @@ const Routes = (): JSX.Element => {
       {
         accessorKey: 'tags',
         header: 'Tags',
+        // eslint-disable-next-line react/no-unstable-nested-components
+        Cell: ({ row }) => (
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {row.original.tags.map((tag: string) => (
+              <TagComponent key={tag} tag={tag} isList={false} />
+            ))}
+          </div>
+        ),
       },
       {
-        accessorKey: 'service.name',
+        accessorKey: 'service_name',
         header: 'Service Name',
       },
       {
         accessorKey: 'hosts',
         header: 'Host',
-        size: 140,
+        // eslint-disable-next-line react/no-unstable-nested-components
+        Cell: ({ row }) => (
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {row.original.hosts.map((host: string, index: number) => (
+              <div key={host}>
+                <TagComponent
+                  tag={
+                    index !== row.original.hosts.length - 1 ? `${host},` : host
+                  }
+                  isList
+                />
+              </div>
+            ))}
+          </div>
+        ),
       },
       {
         accessorKey: 'paths',
         header: 'Paths',
-        size: 80,
+        // eslint-disable-next-line react/no-unstable-nested-components
+        Cell: ({ row }) => (
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {row.original.paths.map((path: string, index: number) => (
+              <div key={path}>
+                <TagComponent
+                  tag={
+                    index !== row.original.paths.length - 1 ? `${path},` : path
+                  }
+                  isList
+                />
+              </div>
+            ))}
+          </div>
+        ),
       },
 
       // {
@@ -287,8 +276,23 @@ const Routes = (): JSX.Element => {
       {
         accessorKey: 'protocols',
         header: 'Protocols',
-        size: 80,
         enableHiding: true,
+        // eslint-disable-next-line react/no-unstable-nested-components
+        Cell: ({ row }) => (
+          <div style={{ display: 'flex' }}>
+            {row.original.protocols.map((protocol: string, index: number) => (
+              <TagComponent
+                key={protocol}
+                tag={
+                  index !== row.original.protocols.length - 1
+                    ? `${protocol},`
+                    : protocol
+                }
+                isList
+              />
+            ))}
+          </div>
+        ),
       },
       {
         accessorKey: 'regex_priority',
@@ -327,6 +331,7 @@ const Routes = (): JSX.Element => {
           description="The Route entities defines rules to match client requests. Each Route is associated with a Service, and a Service may have multiple Routes associated to it. Every request matching a given Route will be proxied to its associated Service."
         />
       </Box>
+
       <SnackBarAlert
         open={open}
         message={snack.message}
@@ -517,9 +522,9 @@ export const CreateNewAccountModal = ({
 };
 
 interface Props {
-  columns: MRT_ColumnDef<Service>[];
+  columns: MRT_ColumnDef<RouteDetails>[];
   onClose: () => void;
-  onSubmit: (values: Service) => void;
+  onSubmit: (values: RouteDetails) => void;
   open: boolean;
 }
 

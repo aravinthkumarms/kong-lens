@@ -21,13 +21,13 @@ import useAwaitableComponent from 'use-awaitable-component';
 import { useNavigate } from 'react-router-dom';
 import { Delete } from '@mui/icons-material';
 import { DELETE, GET } from '../Helpers/ApiHelpers';
-import { Service } from '../Mocks/Service.mock';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
 import { BASE_API_URL } from '../Shared/constants';
-import { snackMessageProp } from '../interfaces';
+import { snackMessageProp, ServiceDetails } from '../interfaces';
 import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
 import { RawView } from '../Components/Features/RawView';
+import { TagComponent } from '../Components/Features/TagComponent';
 
 // example of creating a mantine dialog modal for creating new rows
 export const CreateNewAccountModal = ({
@@ -128,7 +128,7 @@ const Services = (): JSX.Element => {
   );
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, execute, resolve, reject, reset] = useAwaitableComponent();
-  const [tableData, setTableData] = useState<Service[]>([]);
+  const [tableData, setTableData] = useState<ServiceDetails[]>([]);
   const [validationErrors, setValidationErrors] = useState<{
     [cellId: string]: string;
   }>({});
@@ -143,6 +143,16 @@ const Services = (): JSX.Element => {
         .then((response) => {
           if (response.status === 200) {
             const { data } = response.data;
+            for (let i = 0; i < data.length; i += 1) {
+              const curServiceDetails: ServiceDetails = data[i];
+              Object.keys(curServiceDetails).forEach(() => {
+                if (typeof curServiceDetails.created_at === 'number') {
+                  curServiceDetails.created_at = new Date(
+                    curServiceDetails.created_at
+                  ).toLocaleDateString();
+                }
+              });
+            }
             setTableData(data);
             for (let i = 0; i < data.length; i += 1) {
               showRaw.set(data[i].id, false);
@@ -161,14 +171,14 @@ const Services = (): JSX.Element => {
             severity: 'error',
           });
         });
-      setOpen(true);  
+      setOpen(true);
     };
     getServices();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDeleteRow = useCallback(
-    (row: MRT_Row<Service>) => {
+    (row: MRT_Row<ServiceDetails>) => {
       if (
         // !confirm(`Are you sure you want to delete ${row.getValue('firstName')}`)
         !deleteRow
@@ -211,7 +221,9 @@ const Services = (): JSX.Element => {
     setShowRaw((map) => new Map(map.set(id, value)));
   };
 
-  const handleAwaitModal = async (row: MRT_Row<Service>): Promise<void> => {
+  const handleAwaitModal = async (
+    row: MRT_Row<ServiceDetails>
+  ): Promise<void> => {
     setConfirmDialogOpen(true);
     const val: unknown = await execute();
     setPromise(val);
@@ -224,12 +236,12 @@ const Services = (): JSX.Element => {
     setConfirmDialogOpen(!confirmDialogOpen);
   };
 
-  const handleCreateNewRow = (values: Service): void => {
+  const handleCreateNewRow = (values: ServiceDetails): void => {
     tableData.push(values);
     setTableData([...tableData]);
   };
 
-  const handleSaveRowEdits: MaterialReactTableProps<Service>['onEditingRowSave'] =
+  const handleSaveRowEdits: MaterialReactTableProps<ServiceDetails>['onEditingRowSave'] =
     async ({ exitEditingMode, row, values }) => {
       if (!Object.keys(validationErrors).length) {
         tableData[row.index] = values;
@@ -243,7 +255,7 @@ const Services = (): JSX.Element => {
     setValidationErrors({});
   };
 
-  const columns = useMemo<MRT_ColumnDef<Service>[]>(
+  const columns = useMemo<MRT_ColumnDef<ServiceDetails>[]>(
     () => [
       {
         enableHiding: true,
@@ -269,6 +281,22 @@ const Services = (): JSX.Element => {
             color: '#438BCA',
           },
         }),
+      },
+      {
+        accessorKey: 'tags',
+        header: 'Tags',
+        enableHiding: true,
+        size: 150,
+        // eslint-disable-next-line react/no-unstable-nested-components
+        Cell: ({ row }) => (
+          <div style={{ display: 'flex' }}>
+            {row.original.tags.map((tag: string) => (
+              <div key={tag}>
+                <TagComponent tag={tag} isList={false} />
+              </div>
+            ))}
+          </div>
+        ),
       },
       {
         accessorKey: 'protocol',
@@ -310,6 +338,19 @@ const Services = (): JSX.Element => {
         accessorKey: 'connect_timeout',
         header: 'Connect Timeout',
         size: 80,
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Created',
+      },
+      {
+        accessorKey: 'clientCertificate',
+        header: 'Client certificate',
+        enableHiding: true,
+      },
+      {
+        accessorKey: 'ca_certificates',
+        header: 'CA certificates',
         enableHiding: true,
       },
       // {
@@ -440,9 +481,9 @@ const Services = (): JSX.Element => {
 };
 
 interface Props {
-  columns: MRT_ColumnDef<Service>[];
+  columns: MRT_ColumnDef<ServiceDetails>[];
   onClose: () => void;
-  onSubmit: (values: Service) => void;
+  onSubmit: (values: ServiceDetails) => void;
   open: boolean;
 }
 

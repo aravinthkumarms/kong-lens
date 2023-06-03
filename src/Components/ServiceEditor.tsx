@@ -3,19 +3,21 @@ import {
   Box,
   Button,
   CircularProgress,
+  InputLabel,
   Stack,
-  TextField,
   styled,
 } from '@mui/material';
+import Input from '@mui/joy/Input';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { BASE_API_URL } from '../../Shared/constants';
-import { POST, PATCH } from '../../Helpers/ApiHelpers';
-import { SnackBarAlert } from './SnackBarAlert';
+import { TagsInput } from 'react-tag-input-component';
+import { BASE_API_URL } from '../Shared/constants';
+import { POST, PATCH } from '../Helpers/ApiHelpers';
+import { SnackBarAlert } from './Features/SnackBarAlert';
 import {
   ServiceDetails,
   ServiceEditorProps,
   snackMessageProp,
-} from '../../interfaces';
+} from '../interfaces';
 
 const StyledButton = styled(Button)({
   backgroundColor: '#1ABB9C',
@@ -24,15 +26,6 @@ const StyledButton = styled(Button)({
     backgroundColor: '#1AAA9C',
   },
 });
-
-const inputLabelStyle = {
-  shrink: true,
-  style: {
-    fontSize: 20,
-    color: '#1ABB9C',
-    margin: 'auto',
-  },
-};
 
 const ServiceEditor = ({
   service,
@@ -72,6 +65,13 @@ const ServiceEditor = ({
       ...currentService,
       [name]: type === 'number' ? parseInt(value, 10) : value,
     });
+  };
+
+  const handleListChange = (
+    key: keyof typeof service,
+    value: string[]
+  ): void => {
+    currentService[key] = value;
   };
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
@@ -163,28 +163,34 @@ const ServiceEditor = ({
                 margin: 'auto',
               }}
             >
-              {textFields.map((text, index) => (
+              {textFields.map((text) => (
                 <div
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={index}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
+                  key={text.key}
+                  style={{ display: 'flex', flexDirection: 'column' }}
                 >
-                  <TextField
-                    label={
-                      text.key.charAt(0).toUpperCase() +
-                      text.key.slice(1).replace('_', ' ')
-                    }
-                    type={text.type}
-                    InputLabelProps={inputLabelStyle}
-                    name={text.key}
-                    variant="standard"
-                    value={currentService[text.key as keyof typeof service]}
-                    disabled={text.key === 'id'}
-                    onChange={handleOnChange}
-                  />
+                  <InputLabel sx={{ fontSize: 16, color: '#1ABB9C' }}>
+                    {text.key.charAt(0).toUpperCase() +
+                      text.key.slice(1).replace('_', ' ')}
+                  </InputLabel>
+                  {text.type === 'list' && (
+                    <TagsInput
+                      value={currentService[text.key as keyof typeof service]}
+                      onChange={(e) => {
+                        handleListChange(text.key as keyof typeof service, e);
+                      }}
+                    />
+                  )}
+                  {text.type !== 'list' && (
+                    <Input
+                      sx={{
+                        borderRadius: '5px',
+                      }}
+                      type={text.type}
+                      name={text.key}
+                      value={currentService[text.key as keyof typeof service]}
+                      onChange={handleOnChange}
+                    />
+                  )}
                   <span style={{ fontSize: '13px', color: '#B2B2B2' }}>
                     {text.value}
                   </span>

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Service } from '../Mocks/Service.mock';
+import { Service } from '../interfaces';
 
 export const stateInterface: Service = {
   id: '',

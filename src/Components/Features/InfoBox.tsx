@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { Table, TableBody, TableCell, TableRow } from '@mui/material';
-import { InfoBoxProps } from '../interfaces';
+import { InfoBoxProps } from '../../interfaces';
 
 // Define styles for the box header
 const BoxHeader = styled(Box)({

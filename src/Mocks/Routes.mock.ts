@@ -1,5 +1,3 @@
-import { Service } from './Service.mock';
-
 export const routeData = [
   {
     snis: null,

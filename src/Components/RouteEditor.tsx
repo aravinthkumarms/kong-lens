@@ -11,17 +11,17 @@ import {
 } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
-import { Switch, Typography } from '@mui/joy';
+import { Input, Switch, Typography } from '@mui/joy';
 import { TagsInput } from 'react-tag-input-component';
-import { BASE_API_URL } from '../../Shared/constants';
-import { PATCH } from '../../Helpers/ApiHelpers';
-import { SnackBarAlert } from './SnackBarAlert';
+import { BASE_API_URL } from '../Shared/constants';
+import { PATCH } from '../Helpers/ApiHelpers';
+import { SnackBarAlert } from './Features/SnackBarAlert';
 import {
   EditorProps,
   RouteDetails,
   snackMessageProp,
   toggleProps,
-} from '../../interfaces';
+} from '../interfaces';
 
 const StyledButton = styled(Button)({
   backgroundColor: '#1ABB9C',
@@ -152,7 +152,6 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
     if (request.headers.length === 0) request.headers = {};
     request.preserve_host = toggleData.preserve_host;
     request.strip_path = toggleData.strip_path;
-    console.log(toggleData);
     return request;
   };
 
@@ -228,12 +227,12 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
               {textFields.map((text, index) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <div key={index}>
+                  <InputLabel sx={{ fontSize: 16, color: '#1ABB9C' }}>
+                    {text.key.charAt(0).toUpperCase() +
+                      text.key.slice(1).replace('_', ' ')}
+                  </InputLabel>
                   {text.type === 'checkbox' && (
                     <div style={{ display: 'block' }}>
-                      <InputLabel sx={{ fontSize: 16, color: '#1ABB9C' }}>
-                        {text.key.charAt(0).toUpperCase() +
-                          text.key.slice(1).replace('_', ' ')}
-                      </InputLabel>
                       <ExampleTrackChild
                         yes={currentContent[text.key as keyof typeof content]}
                         propKey={text.key}
@@ -241,19 +240,12 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
                     </div>
                   )}
                   {text.type === 'list' && (
-                    <>
-                      <InputLabel sx={{ fontSize: 16, color: '#1ABB9C' }}>
-                        {text.key.charAt(0).toUpperCase() +
-                          text.key.slice(1).replace('_', ' ')}
-                      </InputLabel>
-
-                      <TagsInput
-                        value={currentContent[text.key as keyof typeof content]}
-                        onChange={(e) => {
-                          handleListChange(text.key as keyof typeof content, e);
-                        }}
-                      />
-                    </>
+                    <TagsInput
+                      value={currentContent[text.key as keyof typeof content]}
+                      onChange={(e) => {
+                        handleListChange(text.key as keyof typeof content, e);
+                      }}
+                    />
                   )}
                   {(text.type === 'number' || text.type === 'text') && (
                     <div
@@ -262,16 +254,11 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
                         flexDirection: 'column',
                       }}
                     >
-                      <TextField
-                        label={
-                          text.key.charAt(0).toUpperCase() +
-                          text.key.slice(1).replace('_', ' ')
-                        }
-                        hidden
-                        type={text.type}
-                        InputLabelProps={inputLabelStyle}
+                      <Input
+                        sx={{
+                          borderRadius: '5px',
+                        }}
                         name={text.key}
-                        variant="standard"
                         value={currentContent[text.key as keyof typeof content]}
                         disabled={text.key === 'id'}
                         onChange={handleOnChange}

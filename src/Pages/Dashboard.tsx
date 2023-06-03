@@ -4,8 +4,8 @@ import { styled } from '@mui/material/styles';
 import InfoIcon from '@mui/icons-material/Info';
 import LanIcon from '@mui/icons-material/Lan';
 import StorageIcon from '@mui/icons-material/Storage';
-import PluginBox from '../Components/PluginBox';
-import InfoBox from '../Components/InfoBox';
+import PluginBox from '../Components/Features/PluginBox';
+import InfoBox from '../Components/Features/InfoBox';
 import { GET } from '../Helpers/ApiHelpers';
 import { BASE_API_URL } from '../Shared/constants';
 

@@ -27,7 +27,7 @@ import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 import { useNavigate } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Dashboard } from './Dashboard';
-import PluginBox from '../Components/PluginBox';
+import PluginBox from '../Components/Features/PluginBox';
 import Info from './Info';
 import MenuItem from '../Components/Features/MenuItem';
 import Routes from './Routes';
@@ -39,8 +39,8 @@ import Users from './Users';
 import Connections from './Connections';
 import Settings from './Settings';
 import Services from './Services';
-import ServiceDetail from '../Components/Features/ServiceDetail';
-import RouteDetail from '../Components/Features/RouteDetail';
+import ServiceDetail from '../Components/ServiceDetail';
+import RouteDetail from '../Components/RouteDetail';
 
 const drawerWidth = 240;
 

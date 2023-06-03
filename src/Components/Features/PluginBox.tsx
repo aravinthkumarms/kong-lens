@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import ExtensionSharpIcon from '@mui/icons-material/ExtensionSharp';
 import { makeStyles } from '@mui/styles';
 import { styled } from '@mui/material/styles';
-import { PluginBoxContainerProps } from '../interfaces';
+import { PluginBoxContainerProps } from '../../interfaces';
 
 const BoxHeader = styled(Box)({
   display: 'flex',
