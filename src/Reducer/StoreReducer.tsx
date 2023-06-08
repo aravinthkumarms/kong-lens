@@ -30,7 +30,6 @@ const storeReducer = createSlice({
       if (action.payload.type === 'modal')
         state.routeOpen = action.payload.value;
       else state.refreshRouteTable = action.payload.value;
-      console.log(action.payload);
       return state;
     },
   },
