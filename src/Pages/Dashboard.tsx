@@ -127,8 +127,7 @@ export const Dashboard = (): JSX.Element => {
     setInfoData(data);
     setConnectionsData(connectionsValues);
     setDBData(dbValues);
-    console.log('data', typeof apiData.configuration);
-  }, [apiData]);
+  }, [apiConnectionData, apiData]);
   return (
     <Box>
       <BoxContainer>
