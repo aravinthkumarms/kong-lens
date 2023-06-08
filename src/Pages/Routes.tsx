@@ -59,6 +59,7 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getRoutes = async (): Promise<any> => {
+    // To Get all the routes or all the routes of the respective service based on the page type
     await GET({
       url:
         type === 'nested'
@@ -71,6 +72,7 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
           // eslint-disable-next-line prefer-destructuring
           const data = response.data.data;
           const listKeys = ['protocols', 'paths'];
+          // to get the service name to display in the table
           await Promise.all(
             data.map(async (route: RouteDetails) => {
               const curRouteDetails: RouteDetails = route;
@@ -124,12 +126,7 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
 
   const handleDeleteRow = useCallback(
     (row: MRT_Row<RouteDetails>) => {
-      if (
-        // !confirm(`Are you sure you want to delete ${row.getValue('firstName')}`)
-        !deleteRow
-      ) {
-        return;
-      }
+      if (!deleteRow) return;
       // send api delete request here, then refetch or update local table data for re-render
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       const deleteData = async () => {
