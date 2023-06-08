@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -133,7 +134,7 @@ const renderPages: { [page: string]: JSX.Element } = {
   services: <Services />,
   routes: <Routes type="separate" />,
   consumers: <Consumers />,
-  plugins: <Plugins />,
+  plugins: <Plugins type="separate" />,
   upstreams: <Upstreams />,
   certificates: <Certificates />,
   users: <Users />,

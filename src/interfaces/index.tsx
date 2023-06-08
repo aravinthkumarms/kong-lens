@@ -169,7 +169,7 @@ export type TagProps = {
   isList: boolean;
 };
 
-export type RouteProps = {
+export type PageTypeProps = {
   type: string;
 };
 

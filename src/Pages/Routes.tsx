@@ -23,14 +23,14 @@ import { DELETE, GET } from '../Helpers/ApiHelpers';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
 import { BASE_API_URL } from '../Shared/constants';
-import { snackMessageProp, RouteDetails, RouteProps } from '../interfaces';
+import { snackMessageProp, RouteDetails, PageTypeProps } from '../interfaces';
 import { RawView } from '../Components/Features/RawView';
 import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
 import { TagComponent } from '../Components/Features/TagComponent';
 import { CreateRoute } from '../Components/Features/CreateRoute';
 import { updateValue } from '../Reducer/StoreReducer';
 
-const Routes = ({ type }: RouteProps): JSX.Element => {
+const Routes = ({ type }: PageTypeProps): JSX.Element => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
