@@ -185,7 +185,6 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
       },
       {
         accessorKey: 'name',
-        enableHiding: true,
         header: 'Name',
         size: 140,
         muiTableBodyCellProps: ({ cell }) => ({
@@ -214,6 +213,20 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
       {
         accessorKey: 'service_name',
         header: 'Service',
+        muiTableBodyCellProps: ({ cell }) => ({
+          onClick: () => {
+            type === 'separate'
+              ? navigate(
+                  `/services/${cell.row.original.service.id}/?newId=false`
+                )
+              : null;
+          },
+          sx: {
+            cursor: type === 'separate' ? 'pointer' : null,
+            textDecoration: 'none',
+            color: type === 'separate' ? '#438BCA' : 'black',
+          },
+        }),
       },
       {
         accessorKey: 'created_at',
