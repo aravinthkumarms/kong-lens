@@ -1,11 +1,19 @@
-import { Box, CssBaseline, Divider } from '@mui/material';
+import {
+  Box,
+  CssBaseline,
+  Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { IconInfoCircle } from '@tabler/icons-react';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import CircularProgress from '@mui/material/CircularProgress';
 import PageHeader from './Features/PageHeader';
-import NavPanel from './Features/MiniNavPanel';
 import MiniPageHeader from './Features/MiniPageHeader';
 import {
   BASE_API_URL,
@@ -15,6 +23,7 @@ import {
 import { GET } from '../Helpers/ApiHelpers';
 import { RouteDetails, navBarProps } from '../interfaces';
 import RouteEditor from './RouteEditor';
+import Plugins from '../Pages/Plugins';
 
 const RouteDetail = (): JSX.Element => {
   const { id } = useParams();
@@ -22,7 +31,16 @@ const RouteDetail = (): JSX.Element => {
     RouteDetailsInterface
   );
   const [loading, setLoading] = React.useState(false);
-
+  const list: navBarProps[] = [
+    { value: 'Route Details', icon: <IconInfoCircle /> },
+    { value: 'Plugins', icon: <ExtensionIcon /> },
+  ];
+  const [current, setCurrent] = React.useState(list[0].value);
+  const [number, setNumber] = React.useState(0);
+  const handleCurrent = (value: string): void => {
+    setCurrent(value);
+    setNumber(() => number + 1);
+  };
   const preProcess = (data: RouteDetails): RouteDetails => {
     const keyList = Object.keys(data);
     for (let i = 0; i < keyList.length; i += 1) {
@@ -63,11 +81,16 @@ const RouteDetail = (): JSX.Element => {
     getData();
   }, [id]);
 
-  const list: navBarProps[] = [
-    { value: 'Route Details', icon: <IconInfoCircle /> },
-    { value: 'Plugins', icon: <ExtensionIcon /> },
-  ];
-
+  const renderComponent = {
+    'Route Details': (
+      <RouteEditor
+        content={content}
+        textFields={RouteTextFields}
+        param={false}
+      />
+    ),
+    Plugins: <Plugins type="nested" />,
+  };
   return (
     <Box sx={{ width: '1250px', margin: 'auto' }}>
       <CssBaseline />
@@ -84,7 +107,29 @@ const RouteDetail = (): JSX.Element => {
           justifyContent: 'space-between',
         }}
       >
-        <NavPanel list={list} cur={list[0]} isNew={false} />
+        <Box sx={{ width: '200px' }}>
+          <List>
+            {list.map((text) => (
+              <ListItem
+                key={text.value}
+                sx={{
+                  backgroundColor: current === text.value ? '#1ABB9C' : 'white',
+                  color: 'black',
+                  borderRadius: '10px',
+                }}
+                onClick={() => {
+                  handleCurrent(text.value);
+                }}
+                disablePadding
+              >
+                <ListItemButton>
+                  <ListItemIcon> {text.icon}</ListItemIcon>
+                  <ListItemText primary={text.value} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
         <Box
           sx={{
             width: '1000px',
@@ -92,7 +137,7 @@ const RouteDetail = (): JSX.Element => {
           }}
         >
           <MiniPageHeader
-            header="<b>Route Details</b>"
+            header={`<b>${current}</b>`}
             icon={<IconInfoCircle />}
           />
           {loading ? (
@@ -102,11 +147,7 @@ const RouteDetail = (): JSX.Element => {
               <CircularProgress sx={{ margin: 'auto', color: '#1ABB9C' }} />
             </Box>
           ) : (
-            <RouteEditor
-              content={content}
-              textFields={RouteTextFields}
-              param={false}
-            />
+            renderComponent[current as keyof typeof renderComponent]
           )}
         </Box>
       </Box>

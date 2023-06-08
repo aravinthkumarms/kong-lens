@@ -21,6 +21,7 @@ import { BASE_API_URL } from '../Shared/constants';
 import { GET } from '../Helpers/ApiHelpers';
 import { ServiceDetails, keyValueType, navBarProps } from '../interfaces';
 import Routes from '../Pages/Routes';
+import Plugins from '../Pages/Plugins';
 
 const ServiceDetail = (): JSX.Element => {
   const { id } = useParams();
@@ -139,6 +140,7 @@ const ServiceDetail = (): JSX.Element => {
       <ServiceEditor service={content} textFields={textFields} />
     ),
     Routes: <Routes type="nested" />,
+    Plugins: <Plugins type="nested" />,
   };
   return (
     <Box sx={{ width: '1250px', margin: 'auto' }}>
