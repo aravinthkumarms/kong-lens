@@ -21,7 +21,7 @@ export interface RouteDetails {
   strip_path: any | boolean;
   tags: any;
   path_handling: any;
-  service?: any;
+  service: any;
   service_name: any;
   paths: any;
   methods: any;
@@ -96,7 +96,7 @@ export type ServiceDetails = {
   connect_timeout: any;
   write_timeout: any;
   read_timeout: any;
-  clientCertificate: any;
+  client_certificate: any;
   ca_certificates?: any;
   created_at?: Date | string | number;
   updated_at?: Date | string | number;
@@ -105,6 +105,7 @@ export type ServiceDetails = {
 export type EditorProps = {
   content: RouteDetails;
   textFields: keyValueType[];
+  param: boolean;
 };
 
 export type ServiceEditorProps = {
@@ -166,4 +167,13 @@ export type toggleProps = {
 export type TagProps = {
   tag: string;
   isList: boolean;
+};
+
+export type RouteProps = {
+  type: string;
+};
+
+export type CreateRouteProps = {
+  open: boolean;
+  onClose: VoidFunction;
 };

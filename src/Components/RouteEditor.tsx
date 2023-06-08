@@ -12,8 +12,9 @@ import {
 import { useParams } from 'react-router-dom';
 import { Input, Switch, Typography } from '@mui/joy';
 import { TagsInput } from 'react-tag-input-component';
+import { useDispatch } from 'react-redux';
 import { BASE_API_URL } from '../Shared/constants';
-import { PATCH } from '../Helpers/ApiHelpers';
+import { PATCH, POST } from '../Helpers/ApiHelpers';
 import { SnackBarAlert } from './Features/SnackBarAlert';
 import {
   EditorProps,
@@ -21,6 +22,7 @@ import {
   snackMessageProp,
   toggleProps,
 } from '../interfaces';
+import { updateValue } from '../Reducer/StoreReducer';
 
 const StyledButton = styled(Button)({
   backgroundColor: '#1ABB9C',
@@ -66,9 +68,14 @@ function ExampleTrackChild({ yes, onChange }: toggleProps): JSX.Element {
   );
 }
 
-const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
+const RouteEditor = ({
+  content,
+  textFields,
+  param,
+}: EditorProps): JSX.Element => {
   const [currentContent, setCurrentContent] =
     React.useState<RouteDetails>(content);
+  const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [snack, setSnack] = React.useState<snackMessageProp>({
@@ -112,11 +119,22 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
       const key = keyList[i];
       if (
         data[key as keyof typeof data] === null ||
-        data[key as keyof typeof data] === undefined ||
-        key === 'headers'
+        data[key as keyof typeof data] === undefined
       )
         // eslint-disable-next-line no-param-reassign
         data[key as keyof typeof data] = [];
+    }
+    if (Object.keys(data.headers).length === 0) {
+      // eslint-disable-next-line no-param-reassign
+      data.headers = [];
+    } else if (data.headers) {
+      const headers = [];
+      const keys = Object.keys(data.headers);
+      for (let j = 0; j < keys.length; j += 1) {
+        headers.push(keys[j].concat(`:${data.headers[keys[j]]}`));
+      }
+      // eslint-disable-next-line no-param-reassign
+      data.headers = headers;
     }
     return data;
   };
@@ -144,6 +162,17 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
       request.destinations = null;
     }
     if (request.headers.length === 0) request.headers = {};
+    else {
+      const header = request.headers;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res: any = {};
+      for (let i = 0; i < header.length; i += 1) {
+        const current = header[i].split(':');
+        res[current[0]] = current[1].split(',');
+      }
+
+      request.headers = res;
+    }
     request.preserve_host = toggleData.preserve_host;
     request.strip_path = toggleData.strip_path;
     return request;
@@ -153,39 +182,74 @@ const RouteEditor = ({ content, textFields }: EditorProps): JSX.Element => {
     e.preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const postService = async (): Promise<any> => {
-      setLoading(true);
-      const request = postProcess(currentContent);
-      await PATCH({
-        url: `${BASE_API_URL}/routes/${id}`,
-        body: request,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-      })
-        .then((response) => {
-          if (response.status === 200) {
+      const request: RouteDetails = postProcess(currentContent);
+      if (!param) {
+        setLoading(true);
+        await PATCH({
+          url: `${BASE_API_URL}/routes/${id}`,
+          body: request,
+          headers: { 'Access-Control-Allow-Origin': '*' },
+        })
+          .then((response) => {
+            if (response.status === 200) {
+              setSnack({
+                message: 'Successfully modified service',
+                severity: 'success',
+              });
+              setCurrentContent(preProcess(response.data));
+            }
+            if (response.status === 400) {
+              setSnack({
+                message:
+                  response.data.message || 'Could not able to modify data',
+                severity: 'error',
+              });
+            }
+          })
+          .catch((err) => {
             setSnack({
-              message: 'Successfully modified service',
-              severity: 'success',
-            });
-            setCurrentContent(preProcess(response.data));
-          }
-          if (response.status === 400) {
-            setSnack({
-              message: response.data.message || 'Could not able to modify data',
+              message:
+                err.response.data.message || 'Could not able to modify data',
               severity: 'error',
             });
-          }
-        })
-        .catch((err) => {
-          setSnack({
-            message:
-              err.response.data.message || 'Could not able to modify data',
-            severity: 'error',
+            setCurrentContent(preProcess(request));
           });
-          setCurrentContent(preProcess(request));
-        });
-      setOpen(true);
-      setLoading(false);
+        setOpen(true);
+        setLoading(false);
+      } else {
+        setLoading(true);
+        request.service.id = id;
+        delete request.service_name;
+        await POST({
+          url: `${BASE_API_URL}/routes`,
+          body: request,
+          headers: { 'Access-Control-Allow-Origin': '*' },
+        })
+          .then((response) => {
+            if (response.status === 201) {
+              setSnack({
+                message: 'Successfully created service',
+                severity: 'success',
+              });
+              setCurrentContent(preProcess(response.data));
+              dispatch(updateValue({ type: 'modal', value: false }));
+              dispatch(updateValue({ type: 'refresh', value: true }));
+            }
+          })
+          .catch((err) => {
+            setCurrentContent(preProcess(currentContent));
+            setSnack({
+              message:
+                err.response.data.message ||
+                'Unable to save data, Please try again',
+              severity: 'error',
+            });
+          });
+        setOpen(true);
+        setLoading(false);
+      }
     };
+
     postService();
   };
 

@@ -131,7 +131,7 @@ const renderPages: { [page: string]: JSX.Element } = {
   dashboard: <Dashboard />,
   info: <Info />,
   services: <Services />,
-  routes: <Routes />,
+  routes: <Routes type="separate" />,
   consumers: <Consumers />,
   plugins: <Plugins />,
   upstreams: <Upstreams />,

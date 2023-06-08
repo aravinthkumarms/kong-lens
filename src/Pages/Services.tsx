@@ -1,22 +1,11 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import MaterialReactTable, {
-  MaterialReactTableProps,
   MRT_ColumnDef,
   MRT_Row,
 } from 'material-react-table';
-import { ActionIcon, TextInput } from '@mantine/core';
+import { ActionIcon } from '@mantine/core';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import {
-  CssBaseline,
-  Divider,
-  Button,
-  Dialog,
-  Box,
-  Stack,
-  Tooltip,
-  DialogTitle,
-} from '@mui/material';
-
+import { CssBaseline, Button, Box, Tooltip } from '@mui/material';
 import useAwaitableComponent from 'use-awaitable-component';
 import { useNavigate } from 'react-router-dom';
 import { Delete } from '@mui/icons-material';
@@ -29,92 +18,7 @@ import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
 import { RawView } from '../Components/Features/RawView';
 import { TagComponent } from '../Components/Features/TagComponent';
 
-// example of creating a mantine dialog modal for creating new rows
-export const CreateNewAccountModal = ({
-  open,
-  columns,
-  onClose,
-  onSubmit,
-}: Props): JSX.Element => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [values, setValues] = useState<any>();
-  const fullWidth = true;
-  const handleSubmit = (): void => {
-    // put your validation logic here
-    onSubmit(values);
-    onClose();
-  };
-
-  return (
-    <Divider>
-      <Dialog open={open} maxWidth="sm" fullWidth={fullWidth}>
-        <DialogTitle sx={{ margin: 'auto' }}>Create New Service</DialogTitle>
-        <Box
-          sx={{
-            width: '100%',
-            gap: '24px',
-            margin: 'auto',
-          }}
-        >
-          <form onSubmit={(e) => e.preventDefault()}>
-            <Stack
-              sx={{
-                width: '80%',
-                gap: '24px',
-                margin: 'auto',
-              }}
-            >
-              {columns.map((column) => (
-                <TextInput
-                  key={column.accessorKey}
-                  label={column.header}
-                  name={column.accessorKey}
-                  onChange={(e) =>
-                    setValues({ ...values, [e.target.name]: e.target.value })
-                  }
-                />
-              ))}
-            </Stack>
-          </form>
-        </Box>
-        <Box
-          sx={{
-            padding: '20px',
-            width: '100%',
-            justifyContent: 'center',
-            gap: '16px',
-            margin: 'auto',
-            display: 'flex',
-          }}
-        >
-          <Button
-            onClick={onClose}
-            sx={{
-              backgroundColor: 'teal',
-              color: 'white',
-            }}
-            variant="contained"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            sx={{
-              backgroundColor: 'teal',
-              color: 'white',
-            }}
-            variant="contained"
-          >
-            Submit
-          </Button>
-        </Box>
-      </Dialog>
-    </Divider>
-  );
-};
-
 const Services = (): JSX.Element => {
-  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const deleteRow = useRef(false);
   const [open, setOpen] = useState(false);
@@ -129,9 +33,6 @@ const Services = (): JSX.Element => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, execute, resolve, reject, reset] = useAwaitableComponent();
   const [tableData, setTableData] = useState<ServiceDetails[]>([]);
-  const [validationErrors, setValidationErrors] = useState<{
-    [cellId: string]: string;
-  }>({});
   const navigate = useNavigate();
   React.useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -236,25 +137,6 @@ const Services = (): JSX.Element => {
     setConfirmDialogOpen(!confirmDialogOpen);
   };
 
-  const handleCreateNewRow = (values: ServiceDetails): void => {
-    tableData.push(values);
-    setTableData([...tableData]);
-  };
-
-  const handleSaveRowEdits: MaterialReactTableProps<ServiceDetails>['onEditingRowSave'] =
-    async ({ exitEditingMode, row, values }) => {
-      if (!Object.keys(validationErrors).length) {
-        tableData[row.index] = values;
-        // send/receive api updates here, then refetch or update local table data for re-render
-        setTableData([...tableData]);
-        exitEditingMode(); // required to exit editing mode and close modal
-      }
-    };
-
-  const handleCancelRowEdits = (): void => {
-    setValidationErrors({});
-  };
-
   const columns = useMemo<MRT_ColumnDef<ServiceDetails>[]>(
     () => [
       {
@@ -344,7 +226,7 @@ const Services = (): JSX.Element => {
         header: 'Created',
       },
       {
-        accessorKey: 'clientCertificate',
+        accessorKey: 'client_certificate',
         header: 'Client certificate',
         enableHiding: true,
       },
@@ -353,18 +235,6 @@ const Services = (): JSX.Element => {
         header: 'CA certificates',
         enableHiding: true,
       },
-      // {
-      //   accessorKey: 'path',
-      //   header: 'Path',
-      //   // mantineEditTextInputProps: {
-      //   //   select: true, //change to select for a dropdown
-      //   //   children: states.map((state) => (
-      //   //     <Menu.Item key={state} value={state}>
-      //   //       {state}
-      //   //     </Menu.Item>
-      //   //   )),
-      //   // },
-      // },
     ],
     [navigate]
   );
@@ -412,8 +282,6 @@ const Services = (): JSX.Element => {
             port: false,
           },
         }}
-        onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
         renderRowActions={({ row }) => (
           <Box sx={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <Tooltip arrow placement="left" title="Raw">
@@ -458,12 +326,6 @@ const Services = (): JSX.Element => {
             Create New Service
           </Button>
         )}
-      />
-      <CreateNewAccountModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
       />
       <DialogModal
         description="Really want to delete the selected item?"

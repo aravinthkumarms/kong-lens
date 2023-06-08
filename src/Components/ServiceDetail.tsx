@@ -1,4 +1,13 @@
-import { Box, CssBaseline, Divider } from '@mui/material';
+import {
+  Box,
+  CssBaseline,
+  Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import * as React from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { IconInfoCircle } from '@tabler/icons-react';
@@ -12,10 +21,24 @@ import MiniPageHeader from './Features/MiniPageHeader';
 import { BASE_API_URL } from '../Shared/constants';
 import { GET } from '../Helpers/ApiHelpers';
 import { ServiceDetails, keyValueType, navBarProps } from '../interfaces';
+import RouteDetail from './RouteDetail';
+import Routes from '../Pages/Routes';
 
 const ServiceDetail = (): JSX.Element => {
   const { id } = useParams();
   const { search } = useLocation();
+  const list: navBarProps[] = [
+    { value: 'Service Details', icon: <IconInfoCircle /> },
+    { value: 'Routes', icon: <AltRouteIcon /> },
+    { value: 'Plugins', icon: <ExtensionIcon /> },
+  ];
+  const [current, setCurrent] = React.useState(list[0].value);
+  const [number, setNumber] = React.useState(0);
+  const handleCurrent = (value: string): void => {
+    setCurrent(value);
+    setNumber(() => number + 1);
+  };
+
   const [content, setContent] = React.useState<ServiceDetails>({
     id: '',
     name: '',
@@ -29,7 +52,7 @@ const ServiceDetail = (): JSX.Element => {
     write_timeout: 60000,
     read_timeout: 60000,
     tags: [],
-    clientCertificate: '',
+    client_certificate: '',
     ca_certificates: '',
   });
   const [loading, setLoading] = React.useState(true);
@@ -50,11 +73,6 @@ const ServiceDetail = (): JSX.Element => {
     getService();
   }, [id, loading, paramValue]);
 
-  const list: navBarProps[] = [
-    { value: 'Service Details', icon: <IconInfoCircle /> },
-    { value: 'Routes', icon: <AltRouteIcon /> },
-    { value: 'Plugins', icon: <ExtensionIcon /> },
-  ];
   const textFields: keyValueType[] = [
     { key: 'name', value: 'The service name.', type: 'text' },
     {
@@ -118,6 +136,12 @@ const ServiceDetail = (): JSX.Element => {
       type: 'text',
     },
   ];
+  const renderComponent = {
+    'Service Details': (
+      <ServiceEditor service={content} textFields={textFields} />
+    ),
+    Routes: <Routes type="nested" />,
+  };
   return (
     <Box sx={{ width: '1250px', margin: 'auto' }}>
       <CssBaseline />
@@ -134,7 +158,31 @@ const ServiceDetail = (): JSX.Element => {
           justifyContent: 'space-between',
         }}
       >
-        <NavPanel list={list} cur={list[0]} isNew={paramValue === 'true'} />
+        <Box sx={{ width: '200px' }}>
+          <List>
+            {list.map((text) => (
+              <ListItem
+                key={text.value}
+                sx={{
+                  backgroundColor: current === text.value ? '#1ABB9C' : 'white',
+                  color: 'black',
+                  borderRadius: '10px',
+                }}
+                onClick={() => {
+                  !(paramValue === 'true') ? handleCurrent(text.value) : null;
+                }}
+                disablePadding
+              >
+                <ListItemButton
+                  disabled={paramValue === 'true' && current !== text.value}
+                >
+                  <ListItemIcon> {text.icon}</ListItemIcon>
+                  <ListItemText primary={text.value} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
         <Box
           sx={{
             width: '1000px',
@@ -142,9 +190,10 @@ const ServiceDetail = (): JSX.Element => {
           }}
         >
           <MiniPageHeader
-            header="<b>Service Details</b>"
+            header={`<b>${current}</b>`}
             icon={<IconInfoCircle />}
           />
+
           {loading ? (
             <Box
               sx={{ display: 'flex', height: '500px', alignItems: 'center' }}
@@ -152,7 +201,7 @@ const ServiceDetail = (): JSX.Element => {
               <CircularProgress sx={{ margin: 'auto', color: '#1ABB9C' }} />
             </Box>
           ) : (
-            <ServiceEditor service={content} textFields={textFields} />
+            renderComponent[current as keyof typeof renderComponent]
           )}
         </Box>
       </Box>

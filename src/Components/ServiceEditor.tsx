@@ -31,8 +31,27 @@ const ServiceEditor = ({
   service,
   textFields,
 }: ServiceEditorProps): JSX.Element => {
-  const [currentService, setCurrentService] =
-    React.useState<ServiceDetails>(service);
+  const processData = (data: ServiceDetails, type: string): ServiceDetails => {
+    const keyList = Object.keys(data);
+    for (let i = 0; i < keyList.length; i += 1) {
+      const key = keyList[i];
+      if (
+        (data[key as keyof typeof data] === null ||
+          data[key as keyof typeof data] === undefined ||
+          data[key as keyof typeof data] === '') &&
+        type === 'preprocess'
+      ) {
+        // eslint-disable-next-line no-param-reassign
+        data[key as keyof typeof data] = '';
+      } else if (data[key as keyof typeof data] === '')
+        // eslint-disable-next-line no-param-reassign
+        data[key as keyof typeof data] = null;
+    }
+    return data;
+  };
+  const [currentService, setCurrentService] = React.useState<ServiceDetails>(
+    processData(service, 'preprocess')
+  );
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [snack, setSnack] = React.useState<snackMessageProp>({
@@ -79,10 +98,16 @@ const ServiceEditor = ({
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const postService = async () => {
       if (paramValue === 'true') {
+        const request = currentService;
+        delete request.id;
+        delete request.description;
+        if (request.ca_certificates === '') request.ca_certificates = null;
+        if (request.client_certificate === '')
+          request.client_certificate = null;
         setLoading(true);
         await POST({
           url: `${BASE_API_URL}/services`,
-          body: currentService,
+          body: request,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
@@ -102,14 +127,21 @@ const ServiceEditor = ({
                 'Unable to save data, Please try again',
               severity: 'error',
             });
+            request.ca_certificates = '';
+            request.id = '';
+            request.client_certificate = '';
           });
         setOpen(true);
         setLoading(false);
       } else {
         setLoading(true);
+        const request: ServiceDetails = processData(
+          currentService,
+          'postProcess'
+        );
         await PATCH({
           url: `${BASE_API_URL}/services/${id}`,
-          body: currentService,
+          body: request,
           headers: { 'Access-Control-Allow-Origin': '*' },
         })
           .then((response) => {
@@ -118,6 +150,7 @@ const ServiceEditor = ({
                 message: 'Successfully modified service',
                 severity: 'success',
               });
+              setCurrentService(processData(response.data, 'preprocess'));
             }
           })
           .catch((err) => {
