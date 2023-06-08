@@ -71,7 +71,6 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
         if (response.status === 200) {
           // eslint-disable-next-line prefer-destructuring
           const data = response.data.data;
-          const listKeys = ['protocols', 'paths'];
           // to get the service name to display in the table
           await Promise.all(
             data.map(async (route: RouteDetails) => {
@@ -83,13 +82,11 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
                 curRouteDetails.service = res.data;
                 curRouteDetails.service_name = curRouteDetails.service.name;
               });
-              listKeys.forEach(() => {
-                if (typeof curRouteDetails.created_at === 'number') {
-                  curRouteDetails.created_at = new Date(
-                    curRouteDetails.created_at
-                  ).toLocaleDateString();
-                }
-              });
+              if (typeof curRouteDetails.created_at === 'number') {
+                curRouteDetails.created_at = new Date(
+                  curRouteDetails.created_at
+                ).toLocaleDateString();
+              }
             })
           );
           setTableData(data);
