@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
@@ -69,7 +70,8 @@ export const Dashboard = (): JSX.Element => {
 
   // Use useEffect to fetch API data on component mount
   useEffect(() => {
-    async function getData() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function getData(): Promise<any> {
       const result = await GET({ url: BASE_API_URL });
       const connections = await GET({ url: `${BASE_API_URL}/status` });
       setApiData(result.data);
