@@ -15,13 +15,11 @@ import AltRouteIcon from '@mui/icons-material/AltRoute';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import CircularProgress from '@mui/material/CircularProgress';
 import PageHeader from './Features/PageHeader';
-import NavPanel from './Features/MiniNavPanel';
 import ServiceEditor from './ServiceEditor';
 import MiniPageHeader from './Features/MiniPageHeader';
 import { BASE_API_URL } from '../Shared/constants';
 import { GET } from '../Helpers/ApiHelpers';
 import { ServiceDetails, keyValueType, navBarProps } from '../interfaces';
-import RouteDetail from './RouteDetail';
 import Routes from '../Pages/Routes';
 
 const ServiceDetail = (): JSX.Element => {
