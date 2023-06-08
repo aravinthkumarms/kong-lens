@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 import { useParams } from 'react-router-dom';
-import { Input, Switch, Typography } from '@mui/joy';
+import { Input, Select, Switch, Typography, Option } from '@mui/joy';
 import { TagsInput } from 'react-tag-input-component';
 import { useDispatch } from 'react-redux';
 import { BASE_API_URL } from '../Shared/constants';
@@ -150,6 +150,13 @@ const RouteEditor = ({
     value: string[]
   ): void => {
     currentContent[key] = value;
+  };
+
+  const handlePathHandling = (): void => {
+    setCurrentContent({
+      ...currentContent,
+      path_handling: currentContent.path_handling === 'v1' ? 'v0' : 'v1',
+    });
   };
 
   const postProcess = (request: RouteDetails): RouteDetails => {
@@ -304,6 +311,18 @@ const RouteEditor = ({
                         handleListChange(text.key as keyof typeof content, e);
                       }}
                     />
+                  )}
+                  {text.type === 'dropdown' && (
+                    <Select
+                      defaultValue={
+                        currentContent[text.key as keyof typeof content]
+                      }
+                      value={currentContent[text.key as keyof typeof content]}
+                      onChange={handlePathHandling}
+                    >
+                      <Option value="v1">v1</Option>
+                      <Option value="v0">v0</Option>
+                    </Select>
                   )}
                   {(text.type === 'number' || text.type === 'text') && (
                     <div

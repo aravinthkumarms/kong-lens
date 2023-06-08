@@ -32,7 +32,7 @@ export const RouteTextFields: keyValueType[] = [
     key: 'path_handling',
     value:
       'Controls how the Service path, Route path and requested path are combined when sending a request to the upstream. See above for a detailed description of each behavior. Accepted values are: "v0", "v1". Defaults to "v1".',
-    type: 'text',
+    type: 'dropdown',
   },
 
   {
@@ -98,7 +98,7 @@ export const RouteDetailsInterface = {
   hosts: [],
   paths: [],
   headers: [],
-  path_handling: '',
+  path_handling: 'v1',
   https_redirect_status_code: 426,
   regex_priority: 0,
   methods: [],
