@@ -297,7 +297,7 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
         enableHiding: true,
       },
     ],
-    [navigate]
+    [navigate, type]
   );
 
   return (
