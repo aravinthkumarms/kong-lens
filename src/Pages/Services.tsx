@@ -365,11 +365,4 @@ const Services = (): JSX.Element => {
   );
 };
 
-interface Props {
-  columns: MRT_ColumnDef<ServiceDetails>[];
-  onClose: () => void;
-  onSubmit: (values: ServiceDetails) => void;
-  open: boolean;
-}
-
 export default Services;
