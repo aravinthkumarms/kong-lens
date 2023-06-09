@@ -13,22 +13,27 @@ import { useParams } from 'react-router-dom';
 import { IconInfoCircle } from '@tabler/icons-react';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useSelector, useDispatch } from 'react-redux';
 import PageHeader from './Features/PageHeader';
 import MiniPageHeader from './Features/MiniPageHeader';
 import {
+  ACTION_TYPES,
+  API_RESPONSE_SNACK_MESSAGE,
   BASE_API_URL,
-  RouteDetailsInterface,
-  RouteTextFields,
+  ROUTE_DETAILS_INTERFACE,
+  ROUTE_TEXT_FIELDS,
 } from '../Shared/constants';
 import { GET } from '../Helpers/ApiHelpers';
-import { RouteDetails, navBarProps } from '../interfaces';
+import { RouteDetails, navBarProps, snackMessageProp } from '../interfaces';
 import RouteEditor from './RouteEditor';
 import Plugins from '../Pages/Plugins';
+import { SnackBarAlert } from './Features/SnackBarAlert';
+import { updateValue } from '../Reducer/StoreReducer';
 
 const RouteDetail = (): JSX.Element => {
   const { id } = useParams();
   const [content, setContent] = React.useState<RouteDetails>(
-    RouteDetailsInterface
+    ROUTE_DETAILS_INTERFACE
   );
   const [loading, setLoading] = React.useState(false);
   const list: navBarProps[] = [
@@ -36,7 +41,32 @@ const RouteDetail = (): JSX.Element => {
     { value: 'Plugins', icon: <ExtensionIcon /> },
   ];
   const [current, setCurrent] = React.useState(list[0].value);
+
   const [number, setNumber] = React.useState(0);
+
+  const openSnackBar = useSelector(
+    (state: { reducer: { openSnackBar: boolean } }) =>
+      state.reducer.openSnackBar
+  );
+  const snack = useSelector(
+    (state: { reducer: { snackBar: snackMessageProp } }) =>
+      state.reducer.snackBar
+  );
+  const dispatch = useDispatch();
+
+  const updateFlagReducer = (type: string, value: boolean): void => {
+    dispatch(updateValue({ type, value }));
+  };
+
+  const updateSnackMessage = (message: string, severity: string): void => {
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.SET_SNACK_BAR_MESSAGE,
+        message,
+        severity,
+      })
+    );
+  };
   const handleCurrent = (value: string): void => {
     setCurrent(value);
     setNumber(() => number + 1);
@@ -71,21 +101,39 @@ const RouteDetail = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getData = async () => {
       setLoading(true);
-      const { data } = await GET({
+      await GET({
         url: `${BASE_API_URL}/routes/${id}/`,
         headers: { 'Access-Control-Allow-Origin': '*' },
-      });
-      setContent(preProcess(data));
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            updateSnackMessage(
+              API_RESPONSE_SNACK_MESSAGE.fetchedData,
+              'success'
+            );
+            setContent(preProcess(response.data));
+          }
+        })
+        .catch((err) => {
+          updateSnackMessage(
+            err.response
+              ? err.response.data.message
+              : API_RESPONSE_SNACK_MESSAGE.unableToFetchData,
+            'error'
+          );
+        });
       setLoading(false);
     };
+    updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const renderComponent = {
     'Route Details': (
       <RouteEditor
         content={content}
-        textFields={RouteTextFields}
+        textFields={ROUTE_TEXT_FIELDS}
         param={false}
       />
     ),
@@ -93,6 +141,15 @@ const RouteDetail = (): JSX.Element => {
   };
   return (
     <Box sx={{ width: '1250px', margin: 'auto' }}>
+      <SnackBarAlert
+        open={openSnackBar}
+        message={snack.message}
+        severity={snack.severity}
+        handleClose={() => {
+          updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, false);
+        }}
+      />
+      <br />
       <CssBaseline />
       <PageHeader
         header={`Routes ${content.name}`}

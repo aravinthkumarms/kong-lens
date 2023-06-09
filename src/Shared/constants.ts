@@ -2,7 +2,7 @@ import { keyValueType } from '../interfaces';
 
 export const BASE_API_URL: string =
   process.env.API_URL || 'http://localhost:8001';
-export const RouteTextFields: keyValueType[] = [
+export const ROUTE_TEXT_FIELDS: keyValueType[] = [
   { key: 'name', value: 'The name of the Route.', type: 'text' },
 
   { key: 'tags', value: 'Optionally add tags to the route', type: 'list' },
@@ -92,7 +92,7 @@ export const RouteTextFields: keyValueType[] = [
   },
 ];
 
-export const RouteDetailsInterface = {
+export const ROUTE_DETAILS_INTERFACE = {
   name: '',
   tags: [],
   hosts: [],
@@ -111,3 +111,24 @@ export const RouteDetailsInterface = {
   service_name: '',
   service: {},
 };
+
+export const API_RESPONSE_SNACK_MESSAGE = {
+  unableToFetchData: 'Unable to Fetch data, Please try again!',
+  couldNotModifyData: 'Could not able to modify data!',
+  unableToSaveData: 'Unable to save data, Please try again!',
+  createdNewService: 'Successfully created the service!',
+  modifiedExistingService: 'Successfully modified the service!',
+  createdNewRoute: 'Successfully created the Route!',
+  modifiedExistingRoute: 'Successfully modified the Route!',
+  deletedService: 'Successfully deleted the Service',
+  unableToDelete: 'Unable to delete data, Please try again!',
+  fetchedData: 'Successfully fetched data!',
+};
+
+export const ACTION_TYPES = {
+  OPEN_ROUTE_MODAL: 'OPEN_ROUTE_MODAL',
+  REFRESH_ROUTE_TABLE: 'REFRESH_ROUTE_TABLE',
+  OPEN_SNACK_BAR: 'OPEN_SNACK_BAR',
+  SET_SNACK_BAR_MESSAGE: 'SET_SNACK_BAR_MESSAGE',
+};
+

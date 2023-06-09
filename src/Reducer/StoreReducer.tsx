@@ -1,36 +1,42 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { Service } from '../interfaces';
+import { snackMessageProp } from '../interfaces';
+import { ACTION_TYPES } from '../Shared/constants';
 
-export const stateInterface: Service = {
-  id: '',
-  created_at: 0,
-  updated_at: 0,
-  name: '',
-  retries: 5,
-  protocol: '',
-  host: '',
-  port: 80,
-  path: '',
-  connect_timeout: 60000,
-  write_timeout: 60000,
-  read_timeout: 60000,
+const snackMessageInterface: snackMessageProp = {
+  message: '',
+  severity: 'success',
 };
 
 const reducer = {
   routeOpen: false,
   refreshRouteTable: false,
+  openSnackBar: false,
+  snackBar: snackMessageInterface,
 };
 
 const storeReducer = createSlice({
-  name: 'modal',
+  name: 'commonReducer',
   initialState: () => reducer,
   reducers: {
     updateValue(state, action) {
-      if (action.payload.type === 'modal')
-        state.routeOpen = action.payload.value;
-      else state.refreshRouteTable = action.payload.value;
-      return state;
+      switch (action.payload.type) {
+        case ACTION_TYPES.OPEN_ROUTE_MODAL:
+          state.routeOpen = action.payload.value;
+          return state;
+        case ACTION_TYPES.REFRESH_ROUTE_TABLE:
+          state.refreshRouteTable = action.payload.value;
+          return state;
+        case ACTION_TYPES.SET_SNACK_BAR_MESSAGE:
+          state.snackBar.message = action.payload.message;
+          state.snackBar.severity = action.payload.severity;
+          return state;
+        case ACTION_TYPES.OPEN_SNACK_BAR:
+          state.openSnackBar = action.payload.value;
+          return state;
+        default:
+          return state;
+      }
     },
   },
 });

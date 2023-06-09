@@ -4,7 +4,10 @@ import { ModalClose, Sheet, Typography, Modal, ModalOverflow } from '@mui/joy';
 import { useDispatch } from 'react-redux';
 import { CreateRouteProps } from '../../interfaces';
 import RouteEditor from '../RouteEditor';
-import { RouteDetailsInterface, RouteTextFields } from '../../Shared/constants';
+import {
+  ROUTE_DETAILS_INTERFACE,
+  ROUTE_TEXT_FIELDS,
+} from '../../Shared/constants';
 import { updateValue } from '../../Reducer/StoreReducer';
 
 export const CreateRoute = ({
@@ -47,8 +50,8 @@ export const CreateRoute = ({
             Add Route
           </Typography>
           <RouteEditor
-            content={RouteDetailsInterface}
-            textFields={RouteTextFields}
+            content={ROUTE_DETAILS_INTERFACE}
+            textFields={ROUTE_TEXT_FIELDS}
             param
           />
         </Sheet>

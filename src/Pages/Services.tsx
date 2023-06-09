@@ -9,23 +9,48 @@ import { CssBaseline, Button, Box, Tooltip } from '@mui/material';
 import useAwaitableComponent from 'use-awaitable-component';
 import { useNavigate } from 'react-router-dom';
 import { Delete } from '@mui/icons-material';
+import { useSelector, useDispatch } from 'react-redux';
 import { DELETE, GET } from '../Helpers/ApiHelpers';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
-import { BASE_API_URL } from '../Shared/constants';
+import {
+  BASE_API_URL,
+  API_RESPONSE_SNACK_MESSAGE,
+  ACTION_TYPES,
+} from '../Shared/constants';
 import { snackMessageProp, ServiceDetails } from '../interfaces';
 import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
 import { RawView } from '../Components/Features/RawView';
 import { TagComponent } from '../Components/Features/TagComponent';
+import { updateValue } from '../Reducer/StoreReducer';
 
 const Services = (): JSX.Element => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const dispatch = useDispatch();
   const deleteRow = useRef(false);
-  const [open, setOpen] = useState(false);
-  const [snack, setSnack] = React.useState<snackMessageProp>({
-    message: '',
-    severity: 'success',
-  });
+  const openSnackBar = useSelector(
+    (state: { reducer: { openSnackBar: boolean } }) =>
+      state.reducer.openSnackBar
+  );
+  const snack = useSelector(
+    (state: { reducer: { snackBar: snackMessageProp } }) =>
+      state.reducer.snackBar
+  );
+
+  const updateFlagReducer = (type: string, value: boolean): void => {
+    dispatch(updateValue({ type, value }));
+  };
+
+  const updateSnackMessage = (message: string, severity: string): void => {
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.SET_SNACK_BAR_MESSAGE,
+        message,
+        severity,
+      })
+    );
+  };
+
   const [promise, setPromise] = useState<unknown>();
   const [showRaw, setShowRaw] = useState<Map<string, boolean>>(
     new Map<string, boolean>()
@@ -59,22 +84,19 @@ const Services = (): JSX.Element => {
               showRaw.set(data[i].id, false);
             }
           }
-          setSnack({
-            message: 'Successfully fetched records',
-            severity: 'success',
-          });
+          updateSnackMessage(API_RESPONSE_SNACK_MESSAGE.fetchedData, 'success');
         })
         .catch((err) => {
-          setSnack({
-            message:
-              err.response.data.message ||
-              'Unable to fetch records, Please try again!',
-            severity: 'error',
-          });
+          updateSnackMessage(
+            err.response && err.response.data
+              ? err.response.data.message
+              : API_RESPONSE_SNACK_MESSAGE.unableToFetchData,
+            'error'
+          );
         });
-      setOpen(true);
     };
     getServices();
+    updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -95,27 +117,28 @@ const Services = (): JSX.Element => {
         })
           .then((response) => {
             if (response.status === 204) {
-              setSnack({
-                message: 'Successfully deleted the service',
-                severity: 'info',
-              });
+              updateSnackMessage(
+                API_RESPONSE_SNACK_MESSAGE.deletedService,
+                'info'
+              );
               tableData.splice(row.index, 1);
               setTableData([...tableData]);
             }
           })
           .catch((err) => {
-            setSnack({
-              message:
-                err.response.data.message ||
-                'Unable to delete the record, Please try again!',
-              severity: 'error',
-            });
+            updateSnackMessage(
+              err.response
+                ? err.response.data.message
+                : API_RESPONSE_SNACK_MESSAGE.unableToDelete,
+              'error'
+            );
           });
-        setOpen(true);
       };
       deleteData();
+      updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     },
-    [tableData]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch, tableData]
   );
 
   const handleRawView = (id: string, value: boolean): void => {
@@ -249,11 +272,11 @@ const Services = (): JSX.Element => {
         />
       </Box>
       <SnackBarAlert
-        open={open}
+        open={openSnackBar}
         message={snack.message}
         severity={snack.severity}
         handleClose={() => {
-          setOpen(false);
+          updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, false);
         }}
       />
       <br />

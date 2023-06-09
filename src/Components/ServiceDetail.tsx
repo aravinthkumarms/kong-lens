@@ -14,14 +14,26 @@ import { IconInfoCircle } from '@tabler/icons-react';
 import AltRouteIcon from '@mui/icons-material/AltRoute';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from './Features/PageHeader';
 import ServiceEditor from './ServiceEditor';
 import MiniPageHeader from './Features/MiniPageHeader';
-import { BASE_API_URL } from '../Shared/constants';
+import {
+  ACTION_TYPES,
+  API_RESPONSE_SNACK_MESSAGE,
+  BASE_API_URL,
+} from '../Shared/constants';
 import { GET } from '../Helpers/ApiHelpers';
-import { ServiceDetails, keyValueType, navBarProps } from '../interfaces';
+import {
+  ServiceDetails,
+  keyValueType,
+  navBarProps,
+  snackMessageProp,
+} from '../interfaces';
 import Routes from '../Pages/Routes';
 import Plugins from '../Pages/Plugins';
+import { SnackBarAlert } from './Features/SnackBarAlert';
+import { updateValue } from '../Reducer/StoreReducer';
 
 const ServiceDetail = (): JSX.Element => {
   const { id } = useParams();
@@ -57,19 +69,61 @@ const ServiceDetail = (): JSX.Element => {
   const [loading, setLoading] = React.useState(true);
   const query = new URLSearchParams(search);
   const paramValue = query.get('newId');
+  const openSnackBar = useSelector(
+    (state: { reducer: { openSnackBar: boolean } }) =>
+      state.reducer.openSnackBar
+  );
+  const snack = useSelector(
+    (state: { reducer: { snackBar: snackMessageProp } }) =>
+      state.reducer.snackBar
+  );
+  const dispatch = useDispatch();
+
+  const updateFlagReducer = (type: string, value: boolean): void => {
+    dispatch(updateValue({ type, value }));
+  };
+
+  const updateSnackMessage = (message: string, severity: string): void => {
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.SET_SNACK_BAR_MESSAGE,
+        message,
+        severity,
+      })
+    );
+  };
+
   React.useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getService = async () => {
       if (paramValue === 'false') {
-        const service = await GET({
+        await GET({
           url: `${BASE_API_URL}/services/${id}`,
           headers: { 'Access-Control-Allow-Origin': '*' },
-        });
-        setContent(service.data);
+        })
+          .then((response) => {
+            if (response.status === 200) {
+              updateSnackMessage(
+                API_RESPONSE_SNACK_MESSAGE.fetchedData,
+                'success'
+              );
+              setContent(response.data);
+            }
+          })
+          .catch((err) => {
+            updateSnackMessage(
+              err.response && err.response.data
+                ? err.response.data.message
+                : API_RESPONSE_SNACK_MESSAGE.unableToSaveData,
+              'error'
+            );
+          });
+        updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
       }
       setLoading(false);
     };
     getService();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, loading, paramValue]);
 
   const textFields: keyValueType[] = [
@@ -144,6 +198,15 @@ const ServiceDetail = (): JSX.Element => {
   };
   return (
     <Box sx={{ width: '1250px', margin: 'auto' }}>
+      <SnackBarAlert
+        open={openSnackBar}
+        message={snack.message}
+        severity={snack.severity}
+        handleClose={() => {
+          updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, false);
+        }}
+      />
+      <br />
       <CssBaseline />
       <PageHeader
         header={`Service ${content.name}`}

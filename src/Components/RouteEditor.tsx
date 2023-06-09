@@ -12,8 +12,12 @@ import {
 import { useParams } from 'react-router-dom';
 import { Input, Select, Switch, Typography, Option } from '@mui/joy';
 import { TagsInput } from 'react-tag-input-component';
-import { useDispatch } from 'react-redux';
-import { BASE_API_URL } from '../Shared/constants';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  ACTION_TYPES,
+  API_RESPONSE_SNACK_MESSAGE,
+  BASE_API_URL,
+} from '../Shared/constants';
 import { PATCH, POST } from '../Helpers/ApiHelpers';
 import { SnackBarAlert } from './Features/SnackBarAlert';
 import {
@@ -77,18 +81,22 @@ const RouteEditor = ({
     React.useState<RouteDetails>(content);
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [snack, setSnack] = React.useState<snackMessageProp>({
-    message: '',
-    severity: 'success',
-  });
+  const openSnackBar = useSelector(
+    (state: { reducer: { openSnackBar: boolean } }) =>
+      state.reducer.openSnackBar
+  );
+  const snack = useSelector(
+    (state: { reducer: { snackBar: snackMessageProp } }) =>
+      state.reducer.snackBar
+  );
   const [toggleData, setToggleData] = React.useState({
     strip_path: false,
     preserve_host: false,
   });
   const { id } = useParams();
-  const handleClose = (): void => {
-    setOpen(false);
+
+  const updateFlagReducer = (type: string, value: boolean): void => {
+    dispatch(updateValue({ type, value }));
   };
 
   const handleOnCancel = (): void => {
@@ -159,6 +167,16 @@ const RouteEditor = ({
     });
   };
 
+  const updateSnackMessage = (message: string, severity: string): void => {
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.SET_SNACK_BAR_MESSAGE,
+        message,
+        severity,
+      })
+    );
+  };
+
   const postProcess = (request: RouteDetails): RouteDetails => {
     if (
       request.protocols.length !== 0 &&
@@ -199,29 +217,23 @@ const RouteEditor = ({
         })
           .then((response) => {
             if (response.status === 200) {
-              setSnack({
-                message: 'Successfully modified service',
-                severity: 'success',
-              });
+              updateSnackMessage(
+                API_RESPONSE_SNACK_MESSAGE.modifiedExistingRoute,
+                'success'
+              );
               setCurrentContent(preProcess(response.data));
-            }
-            if (response.status === 400) {
-              setSnack({
-                message:
-                  response.data.message || 'Could not able to modify data',
-                severity: 'error',
-              });
             }
           })
           .catch((err) => {
-            setSnack({
-              message:
-                err.response.data.message || 'Could not able to modify data',
-              severity: 'error',
-            });
+            updateSnackMessage(
+              err.response
+                ? err.response.data.message
+                : API_RESPONSE_SNACK_MESSAGE.createdNewRoute,
+              'success'
+            );
             setCurrentContent(preProcess(request));
           });
-        setOpen(true);
+        updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
         setLoading(false);
       } else {
         setLoading(true);
@@ -234,39 +246,40 @@ const RouteEditor = ({
         })
           .then((response) => {
             if (response.status === 201) {
-              setSnack({
-                message: 'Successfully created service',
-                severity: 'success',
-              });
+              updateSnackMessage(
+                API_RESPONSE_SNACK_MESSAGE.createdNewRoute,
+                'success'
+              );
               setCurrentContent(preProcess(response.data));
-              dispatch(updateValue({ type: 'modal', value: false }));
-              dispatch(updateValue({ type: 'refresh', value: true }));
+              updateFlagReducer(ACTION_TYPES.OPEN_ROUTE_MODAL, false);
+              updateFlagReducer(ACTION_TYPES.REFRESH_ROUTE_TABLE, true);
             }
           })
           .catch((err) => {
             setCurrentContent(preProcess(currentContent));
-            setSnack({
-              message:
-                err.response.data.message ||
-                'Unable to save data, Please try again',
-              severity: 'error',
-            });
+            updateSnackMessage(
+              err.response
+                ? err.response.data.message
+                : API_RESPONSE_SNACK_MESSAGE.unableToSaveData,
+              'error'
+            );
           });
-        setOpen(true);
+        updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
         setLoading(false);
       }
     };
-
     postService();
   };
 
   return (
     <>
       <SnackBarAlert
-        open={open}
+        open={openSnackBar}
         message={snack.message}
         severity={snack.severity}
-        handleClose={handleClose}
+        handleClose={() => {
+          updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, false);
+        }}
       />
       <br />
       {loading ? (

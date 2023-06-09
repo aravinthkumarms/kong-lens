@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import MaterialReactTable, {
   MRT_ColumnDef,
@@ -22,7 +23,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DELETE, GET } from '../Helpers/ApiHelpers';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
-import { BASE_API_URL } from '../Shared/constants';
+import {
+  BASE_API_URL,
+  API_RESPONSE_SNACK_MESSAGE,
+  ACTION_TYPES,
+} from '../Shared/constants';
 import { snackMessageProp, RouteDetails, PageTypeProps } from '../interfaces';
 import { RawView } from '../Components/Features/RawView';
 import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
@@ -41,12 +46,29 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
     (state: { reducer: { refreshRouteTable: boolean } }) =>
       state.reducer.refreshRouteTable
   );
+  const openSnackBar = useSelector(
+    (state: { reducer: { openSnackBar: boolean } }) =>
+      state.reducer.openSnackBar
+  );
+  const snack = useSelector(
+    (state: { reducer: { snackBar: snackMessageProp } }) =>
+      state.reducer.snackBar
+  );
+
+  const updateFlagReducer = (actionType: string, value: boolean): void => {
+    dispatch(updateValue({ type: actionType, value }));
+  };
+
+  const updateSnackMessage = (message: string, severity: string): void => {
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.SET_SNACK_BAR_MESSAGE,
+        message,
+        severity,
+      })
+    );
+  };
   const deleteRow = useRef(false);
-  const [open, setOpen] = useState(false);
-  const [snack, setSnack] = React.useState<snackMessageProp>({
-    message: '',
-    severity: 'success',
-  });
   const [promise, setPromise] = useState<unknown>();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, execute, resolve, reject, reset] = useAwaitableComponent();
@@ -59,6 +81,7 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getRoutes = async (): Promise<any> => {
+    setLoading(true);
     // To Get all the routes or all the routes of the respective service based on the page type
     await GET({
       url:
@@ -78,10 +101,19 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
               await GET({
                 url: `${BASE_API_URL}/services/${curRouteDetails.service.id}`,
                 headers: { 'Access-Control-Allow-Origin': '*' },
-              }).then((res) => {
-                curRouteDetails.service = res.data;
-                curRouteDetails.service_name = curRouteDetails.service.name;
-              });
+              })
+                .then((res) => {
+                  curRouteDetails.service = res.data;
+                  curRouteDetails.service_name = curRouteDetails.service.name;
+                })
+                .catch((err) => {
+                  updateSnackMessage(
+                    err.response && err.response.data
+                      ? err.response.data.message
+                      : API_RESPONSE_SNACK_MESSAGE.unableToFetchData,
+                    'error'
+                  );
+                });
               if (typeof curRouteDetails.created_at === 'number') {
                 curRouteDetails.created_at = new Date(
                   curRouteDetails.created_at
@@ -89,32 +121,27 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
               }
             })
           );
-          setTableData(data);
           for (let i = 0; i < data.length; i += 1) {
             showRaw.set(data[i].id, false);
           }
           setTableData(data);
         }
-        setSnack({
-          message: 'Successfully fetched records',
-          severity: 'success',
-        });
+        updateSnackMessage(API_RESPONSE_SNACK_MESSAGE.fetchedData, 'success');
       })
       .catch((err) => {
-        setSnack({
-          message:
-            err.response.data.message ||
-            'Unable to fetch records, Please try again!',
-          severity: 'error',
-        });
+        updateSnackMessage(
+          err.response && err.response.data
+            ? err.response.data.message
+            : API_RESPONSE_SNACK_MESSAGE.unableToFetchData,
+          'error'
+        );
       });
-    setOpen(true);
-  };
-  React.useEffect(() => {
-    setLoading(true);
-    if (!routeOpen) getRoutes();
     setLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    dispatch(updateValue({ type: ACTION_TYPES.OPEN_SNACK_BAR, value: true }));
+  };
+
+  React.useEffect(() => {
+    if (!routeOpen) getRoutes();
   }, [loading, routeOpen, refreshRouteTable]);
 
   const handleRawView = (key: string, value: boolean): void => {
@@ -133,25 +160,27 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
         })
           .then((response) => {
             if (response.status === 204) {
-              setSnack({
-                message: 'Successfully deleted the service',
-                severity: 'info',
-              });
+              updateSnackMessage(
+                API_RESPONSE_SNACK_MESSAGE.deletedService,
+                'info'
+              );
               tableData.splice(row.index, 1);
               setTableData([...tableData]);
             }
           })
           .catch((err) => {
-            setSnack({
-              message: err.response.data.message,
-              severity: 'info',
-            });
+            updateSnackMessage(
+              err.response
+                ? err.response.data.message
+                : API_RESPONSE_SNACK_MESSAGE.unableToDelete,
+              'error'
+            );
           });
-        setOpen(true);
       };
       deleteData();
+      updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     },
-    [tableData]
+    [dispatch, tableData]
   );
 
   const handleAwaitModal = async (
@@ -313,11 +342,11 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
       </Box>
 
       <SnackBarAlert
-        open={open}
+        open={openSnackBar}
         message={snack.message}
         severity={snack.severity}
         handleClose={() => {
-          setOpen(false);
+          updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, false);
         }}
       />
       <br />
@@ -385,7 +414,12 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
             onClick={() => {
               type === 'separate'
                 ? navigate(`/services`)
-                : dispatch(updateValue({ type: 'modal', value: true }));
+                : dispatch(
+                    updateValue({
+                      type: ACTION_TYPES.OPEN_ROUTE_MODAL,
+                      value: true,
+                    })
+                  );
             }}
             variant="text"
           >
@@ -409,8 +443,12 @@ const Routes = ({ type }: PageTypeProps): JSX.Element => {
       <CreateRoute
         open={routeOpen}
         onClose={() => {
-          dispatch(updateValue({ type: 'modal', value: false }));
-          dispatch(updateValue({ type: 'refresh', value: true }));
+          dispatch(
+            updateValue({ type: ACTION_TYPES.OPEN_ROUTE_MODAL, value: false })
+          );
+          dispatch(
+            updateValue({ type: ACTION_TYPES.REFRESH_ROUTE_TABLE, value: true })
+          );
         }}
       />
     </>

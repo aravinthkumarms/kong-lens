@@ -10,7 +10,12 @@ import {
 import Input from '@mui/joy/Input';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { TagsInput } from 'react-tag-input-component';
-import { BASE_API_URL } from '../Shared/constants';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  BASE_API_URL,
+  API_RESPONSE_SNACK_MESSAGE,
+  ACTION_TYPES,
+} from '../Shared/constants';
 import { POST, PATCH } from '../Helpers/ApiHelpers';
 import { SnackBarAlert } from './Features/SnackBarAlert';
 import {
@@ -18,6 +23,7 @@ import {
   ServiceEditorProps,
   snackMessageProp,
 } from '../interfaces';
+import { updateValue } from '../Reducer/StoreReducer';
 
 const StyledButton = styled(Button)({
   backgroundColor: '#1ABB9C',
@@ -49,23 +55,48 @@ const ServiceEditor = ({
     }
     return data;
   };
+
   const [currentService, setCurrentService] = React.useState<ServiceDetails>(
     processData(service, 'preprocess')
   );
+
   const [loading, setLoading] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [snack, setSnack] = React.useState<snackMessageProp>({
-    message: '',
-    severity: 'success',
-  });
-  let { id } = useParams();
-  const navigate = useNavigate();
-  const { search } = useLocation();
-  const query = new URLSearchParams(search);
-  const paramValue = query.get('newId');
-  const handleClose = (): void => {
-    setOpen(false);
+
+  const openSnackBar = useSelector(
+    (state: { reducer: { openSnackBar: boolean } }) =>
+      state.reducer.openSnackBar
+  );
+
+  const snack = useSelector(
+    (state: { reducer: { snackBar: snackMessageProp } }) =>
+      state.reducer.snackBar
+  );
+
+  const dispatch = useDispatch();
+
+  const updateFlagReducer = (type: string, value: boolean): void => {
+    dispatch(updateValue({ type, value }));
   };
+
+  const updateSnackMessage = (message: string, severity: string): void => {
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.SET_SNACK_BAR_MESSAGE,
+        message,
+        severity,
+      })
+    );
+  };
+
+  let { id } = useParams();
+
+  const navigate = useNavigate();
+
+  const { search } = useLocation();
+
+  const query = new URLSearchParams(search);
+
+  const paramValue = query.get('newId');
 
   const handleOnCancel = (): void => {
     setCurrentService(service);
@@ -114,24 +145,23 @@ const ServiceEditor = ({
             id = response.data.id;
             if (response.status === 201) {
               navigate(`../services/${id}/?newId=false`, { replace: true });
-              setSnack({
-                message: 'Successfully created service',
-                severity: 'success',
-              });
+              updateSnackMessage(
+                API_RESPONSE_SNACK_MESSAGE.createdNewService,
+                'success'
+              );
             }
           })
           .catch((err) => {
-            setSnack({
-              message:
-                err.response.data.message ||
-                'Unable to save data, Please try again',
-              severity: 'error',
-            });
+            updateSnackMessage(
+              err.response
+                ? err.response.data.message
+                : API_RESPONSE_SNACK_MESSAGE.unableToSaveData,
+              'error'
+            );
             request.ca_certificates = '';
             request.id = '';
             request.client_certificate = '';
           });
-        setOpen(true);
         setLoading(false);
       } else {
         setLoading(true);
@@ -146,34 +176,37 @@ const ServiceEditor = ({
         })
           .then((response) => {
             if (response.status === 200) {
-              setSnack({
-                message: 'Successfully modified service',
-                severity: 'success',
-              });
+              updateSnackMessage(
+                API_RESPONSE_SNACK_MESSAGE.modifiedExistingService,
+                'success'
+              );
               setCurrentService(processData(response.data, 'preprocess'));
             }
           })
           .catch((err) => {
-            setSnack({
-              message:
-                err.response.data.message || 'Could not able to fetch data',
-              severity: 'error',
-            });
+            updateSnackMessage(
+              err.response
+                ? err.response.data.message
+                : API_RESPONSE_SNACK_MESSAGE.unableToSaveData,
+              'error'
+            );
           });
-        setOpen(true);
         setLoading(false);
       }
     };
+    updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     postService();
   };
 
   return (
     <>
       <SnackBarAlert
-        open={open}
+        open={openSnackBar}
         message={snack.message}
         severity={snack.severity}
-        handleClose={handleClose}
+        handleClose={() => {
+          updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, false);
+        }}
       />
       <br />
       {loading ? (
