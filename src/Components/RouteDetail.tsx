@@ -20,7 +20,6 @@ import {
   ACTION_TYPES,
   API_RESPONSE_SNACK_MESSAGE,
   BASE_API_URL,
-  ROUTE_DETAILS_INTERFACE,
   ROUTE_TEXT_FIELDS,
 } from '../Shared/constants';
 import { GET } from '../Helpers/ApiHelpers';
@@ -32,15 +31,15 @@ import { updateValue } from '../Reducer/StoreReducer';
 
 const RouteDetail = (): JSX.Element => {
   const { id } = useParams();
-  const [content, setContent] = React.useState<RouteDetails>(
-    ROUTE_DETAILS_INTERFACE
-  );
+
   const [loading, setLoading] = React.useState(false);
+
   const list: navBarProps[] = [
     { value: 'Route Details', icon: <IconInfoCircle /> },
     { value: 'Plugins', icon: <ExtensionIcon /> },
   ];
-  const [current, setCurrent] = React.useState(list[0].value);
+
+  const [currentPage, setCurrentPage] = React.useState(list[0].value);
 
   const [number, setNumber] = React.useState(0);
 
@@ -48,11 +47,17 @@ const RouteDetail = (): JSX.Element => {
     (state: { reducer: { openSnackBar: boolean } }) =>
       state.reducer.openSnackBar
   );
+
   const snack = useSelector(
     (state: { reducer: { snackBar: snackMessageProp } }) =>
       state.reducer.snackBar
   );
+
   const dispatch = useDispatch();
+
+  const routeData = useSelector(
+    (state: { reducer: { routeData: RouteDetails } }) => state.reducer.routeData
+  );
 
   const updateFlagReducer = (type: string, value: boolean): void => {
     dispatch(updateValue({ type, value }));
@@ -67,10 +72,12 @@ const RouteDetail = (): JSX.Element => {
       })
     );
   };
-  const handleCurrent = (value: string): void => {
-    setCurrent(value);
+
+  const handleCurrentPage = (value: string): void => {
+    setCurrentPage(value);
     setNumber(() => number + 1);
   };
+
   const preProcess = (data: RouteDetails): RouteDetails => {
     const keyList = Object.keys(data);
     for (let i = 0; i < keyList.length; i += 1) {
@@ -94,6 +101,7 @@ const RouteDetail = (): JSX.Element => {
       // eslint-disable-next-line no-param-reassign
       data.headers = headers;
     }
+
     return data;
   };
 
@@ -111,7 +119,10 @@ const RouteDetail = (): JSX.Element => {
               API_RESPONSE_SNACK_MESSAGE.fetchedData,
               'success'
             );
-            setContent(preProcess(response.data));
+            const data = preProcess(response.data);
+            dispatch(
+              updateValue({ type: ACTION_TYPES.UPDATE_ROUTE_DATA, data })
+            );
           }
         })
         .catch((err) => {
@@ -123,16 +134,16 @@ const RouteDetail = (): JSX.Element => {
           );
         });
       setLoading(false);
+      updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     };
-    updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, []);
 
   const renderComponent = {
     'Route Details': (
       <RouteEditor
-        content={content}
+        content={routeData}
         textFields={ROUTE_TEXT_FIELDS}
         param={false}
       />
@@ -152,7 +163,7 @@ const RouteDetail = (): JSX.Element => {
       <br />
       <CssBaseline />
       <PageHeader
-        header={`Routes ${content.name}`}
+        header={`Routes ${routeData.name}`}
         description="<a href='/routes' style=color:'#79C2E3';text-decoration:none>routes</a> / show"
       />
       <br />
@@ -170,12 +181,13 @@ const RouteDetail = (): JSX.Element => {
               <ListItem
                 key={text.value}
                 sx={{
-                  backgroundColor: current === text.value ? '#1ABB9C' : 'white',
+                  backgroundColor:
+                    currentPage === text.value ? '#1ABB9C' : 'white',
                   color: 'black',
                   borderRadius: '10px',
                 }}
                 onClick={() => {
-                  handleCurrent(text.value);
+                  handleCurrentPage(text.value);
                 }}
                 disablePadding
               >
@@ -194,7 +206,7 @@ const RouteDetail = (): JSX.Element => {
           }}
         >
           <MiniPageHeader
-            header={`<b>${current}</b>`}
+            header={`<b>${currentPage}</b>`}
             icon={<IconInfoCircle />}
           />
           {loading ? (
@@ -204,7 +216,7 @@ const RouteDetail = (): JSX.Element => {
               <CircularProgress sx={{ margin: 'auto', color: '#1ABB9C' }} />
             </Box>
           ) : (
-            renderComponent[current as keyof typeof renderComponent]
+            renderComponent[currentPage as keyof typeof renderComponent]
           )}
         </Box>
       </Box>

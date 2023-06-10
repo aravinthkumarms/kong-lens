@@ -92,6 +92,87 @@ export const ROUTE_TEXT_FIELDS: keyValueType[] = [
   },
 ];
 
+export const SERVICE_TEXT_FIELDS: keyValueType[] = [
+  { key: 'name', value: 'The service name.', type: 'text' },
+  {
+    key: 'description',
+    value: 'An optional service description.',
+    type: 'text',
+  },
+  { key: 'tags', value: 'Optionally add tags to the service', type: 'list' },
+  {
+    key: 'protocol',
+    value:
+      'The protocol used to communicate with the upstream. It can be one of http or https.',
+    type: 'text',
+  },
+
+  { key: 'host', value: 'The host of the upstream server.', type: 'text' },
+  {
+    key: 'port',
+    value: 'The upstream server port. Defaults to 80.',
+    type: 'number',
+  },
+
+  {
+    key: 'path',
+    value:
+      'The path to be used in requests to the upstream server. Empty by default.',
+    type: 'text',
+  },
+
+  {
+    key: 'retries',
+    value:
+      'The number of retries to execute upon failure to proxy. The default is 5.',
+    type: 'number',
+  },
+
+  {
+    key: 'connect_timeout',
+    value:
+      'The timeout in milliseconds for establishing a connection to your upstream server. Defaults to 60000',
+    type: 'number',
+  },
+
+  {
+    key: 'write_timeout',
+    value:
+      'The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server. Defaults to 60000',
+    type: 'number',
+  },
+
+  {
+    key: 'read_timeout',
+    value:
+      'The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server. Defaults to 60000',
+    type: 'number',
+  },
+  {
+    key: 'client_certificate',
+    value:
+      'Certificate (id) to be used as client certificate while TLS handshaking to the upstream server.',
+    type: 'text',
+  },
+];
+
+export const SERVICE_DETAILS_INTERFACE = {
+  id: '',
+  name: '',
+  description: '',
+  retries: 5,
+  protocol: '',
+  host: '',
+  port: 80,
+  path: '',
+  connect_timeout: 60000,
+  write_timeout: 60000,
+  read_timeout: 60000,
+  tags: [],
+  client_certificate: '',
+  ca_certificates: '',
+};
+
 export const ROUTE_DETAILS_INTERFACE = {
   name: '',
   tags: [],
@@ -130,5 +211,13 @@ export const ACTION_TYPES = {
   REFRESH_ROUTE_TABLE: 'REFRESH_ROUTE_TABLE',
   OPEN_SNACK_BAR: 'OPEN_SNACK_BAR',
   SET_SNACK_BAR_MESSAGE: 'SET_SNACK_BAR_MESSAGE',
+  UPDATE_ROUTE_DATA: 'UPDATE_ROUTE_DATA',
+  UPDATE_ROUTE_DATA_VALUES: 'UPDATE_ROUTE_DATA_VALUES',
+  UPDATE_SERVICE_DATA: 'UPDATE_SERVICE_DATA',
+  UPDATE_SERVICE_DATA_VALUES: 'UPDATE_SERVICE_DATA_VALUES',
 };
 
+export const PROCESS_TYPE = {
+  PRE_PROCESS: 'PRE_PROCESS',
+  POST_PROCESS: 'POST_PROCESS',
+};

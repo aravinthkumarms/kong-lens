@@ -22,14 +22,10 @@ import {
   ACTION_TYPES,
   API_RESPONSE_SNACK_MESSAGE,
   BASE_API_URL,
+  SERVICE_TEXT_FIELDS,
 } from '../Shared/constants';
 import { GET } from '../Helpers/ApiHelpers';
-import {
-  ServiceDetails,
-  keyValueType,
-  navBarProps,
-  snackMessageProp,
-} from '../interfaces';
+import { ServiceDetails, navBarProps, snackMessageProp } from '../interfaces';
 import Routes from '../Pages/Routes';
 import Plugins from '../Pages/Plugins';
 import { SnackBarAlert } from './Features/SnackBarAlert';
@@ -37,47 +33,46 @@ import { updateValue } from '../Reducer/StoreReducer';
 
 const ServiceDetail = (): JSX.Element => {
   const { id } = useParams();
+
   const { search } = useLocation();
+
+  const dispatch = useDispatch();
+
   const list: navBarProps[] = [
     { value: 'Service Details', icon: <IconInfoCircle /> },
     { value: 'Routes', icon: <AltRouteIcon /> },
     { value: 'Plugins', icon: <ExtensionIcon /> },
   ];
-  const [current, setCurrent] = React.useState(list[0].value);
+
+  const [currentPage, setCurrentPage] = React.useState(list[0].value);
+
   const [number, setNumber] = React.useState(0);
-  const handleCurrent = (value: string): void => {
-    setCurrent(value);
+
+  const handleCurrentPage = (value: string): void => {
+    setCurrentPage(value);
     setNumber(() => number + 1);
   };
 
-  const [content, setContent] = React.useState<ServiceDetails>({
-    id: '',
-    name: '',
-    description: '',
-    retries: 5,
-    protocol: '',
-    host: '',
-    port: 80,
-    path: '',
-    connect_timeout: 60000,
-    write_timeout: 60000,
-    read_timeout: 60000,
-    tags: [],
-    client_certificate: '',
-    ca_certificates: '',
-  });
-  const [loading, setLoading] = React.useState(true);
-  const query = new URLSearchParams(search);
-  const paramValue = query.get('newId');
   const openSnackBar = useSelector(
     (state: { reducer: { openSnackBar: boolean } }) =>
       state.reducer.openSnackBar
   );
+
   const snack = useSelector(
     (state: { reducer: { snackBar: snackMessageProp } }) =>
       state.reducer.snackBar
   );
-  const dispatch = useDispatch();
+
+  const serviceData = useSelector(
+    (state: { reducer: { serviceData: ServiceDetails } }) =>
+      state.reducer.serviceData
+  );
+
+  const [loading, setLoading] = React.useState(true);
+
+  const query = new URLSearchParams(search);
+
+  const paramValue = query.get('newId');
 
   const updateFlagReducer = (type: string, value: boolean): void => {
     dispatch(updateValue({ type, value }));
@@ -107,7 +102,12 @@ const ServiceDetail = (): JSX.Element => {
                 API_RESPONSE_SNACK_MESSAGE.fetchedData,
                 'success'
               );
-              setContent(response.data);
+              dispatch(
+                updateValue({
+                  type: ACTION_TYPES.UPDATE_SERVICE_DATA,
+                  data: response.data,
+                })
+              );
             }
           })
           .catch((err) => {
@@ -126,72 +126,9 @@ const ServiceDetail = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, loading, paramValue]);
 
-  const textFields: keyValueType[] = [
-    { key: 'name', value: 'The service name.', type: 'text' },
-    {
-      key: 'description',
-      value: 'An optional service description.',
-      type: 'text',
-    },
-    { key: 'tags', value: 'Optionally add tags to the service', type: 'list' },
-    {
-      key: 'protocol',
-      value:
-        'The protocol used to communicate with the upstream. It can be one of http or https.',
-      type: 'text',
-    },
-
-    { key: 'host', value: 'The host of the upstream server.', type: 'text' },
-    {
-      key: 'port',
-      value: 'The upstream server port. Defaults to 80.',
-      type: 'number',
-    },
-
-    {
-      key: 'path',
-      value:
-        'The path to be used in requests to the upstream server. Empty by default.',
-      type: 'text',
-    },
-
-    {
-      key: 'retries',
-      value:
-        'The number of retries to execute upon failure to proxy. The default is 5.',
-      type: 'number',
-    },
-
-    {
-      key: 'connect_timeout',
-      value:
-        'The timeout in milliseconds for establishing a connection to your upstream server. Defaults to 60000',
-      type: 'number',
-    },
-
-    {
-      key: 'write_timeout',
-      value:
-        'The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server. Defaults to 60000',
-      type: 'number',
-    },
-
-    {
-      key: 'read_timeout',
-      value:
-        'The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server. Defaults to 60000',
-      type: 'number',
-    },
-    {
-      key: 'client_certificate',
-      value:
-        'Certificate (id) to be used as client certificate while TLS handshaking to the upstream server.',
-      type: 'text',
-    },
-  ];
   const renderComponent = {
     'Service Details': (
-      <ServiceEditor service={content} textFields={textFields} />
+      <ServiceEditor service={serviceData} textFields={SERVICE_TEXT_FIELDS} />
     ),
     Routes: <Routes type="nested" />,
     Plugins: <Plugins type="nested" />,
@@ -209,7 +146,7 @@ const ServiceDetail = (): JSX.Element => {
       <br />
       <CssBaseline />
       <PageHeader
-        header={`Service ${content.name}`}
+        header={`Service ${serviceData.name}`}
         description="<a href='/services' style=color:'#79C2E3';text-decoration:none>service</a> / show"
       />
       <br />
@@ -227,17 +164,20 @@ const ServiceDetail = (): JSX.Element => {
               <ListItem
                 key={text.value}
                 sx={{
-                  backgroundColor: current === text.value ? '#1ABB9C' : 'white',
+                  backgroundColor:
+                    currentPage === text.value ? '#1ABB9C' : 'white',
                   color: 'black',
                   borderRadius: '10px',
                 }}
                 onClick={() => {
-                  !(paramValue === 'true') ? handleCurrent(text.value) : null;
+                  !(paramValue === 'true')
+                    ? handleCurrentPage(text.value)
+                    : null;
                 }}
                 disablePadding
               >
                 <ListItemButton
-                  disabled={paramValue === 'true' && current !== text.value}
+                  disabled={paramValue === 'true' && currentPage !== text.value}
                 >
                   <ListItemIcon> {text.icon}</ListItemIcon>
                   <ListItemText primary={text.value} />
@@ -253,7 +193,7 @@ const ServiceDetail = (): JSX.Element => {
           }}
         >
           <MiniPageHeader
-            header={`<b>${current}</b>`}
+            header={`<b>${currentPage}</b>`}
             icon={<IconInfoCircle />}
           />
 
@@ -264,7 +204,7 @@ const ServiceDetail = (): JSX.Element => {
               <CircularProgress sx={{ margin: 'auto', color: '#1ABB9C' }} />
             </Box>
           ) : (
-            renderComponent[current as keyof typeof renderComponent]
+            renderComponent[currentPage as keyof typeof renderComponent]
           )}
         </Box>
       </Box>

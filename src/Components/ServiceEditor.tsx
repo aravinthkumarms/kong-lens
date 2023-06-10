@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import * as React from 'react';
 import {
   Box,
@@ -15,6 +16,7 @@ import {
   BASE_API_URL,
   API_RESPONSE_SNACK_MESSAGE,
   ACTION_TYPES,
+  PROCESS_TYPE,
 } from '../Shared/constants';
 import { POST, PATCH } from '../Helpers/ApiHelpers';
 import { SnackBarAlert } from './Features/SnackBarAlert';
@@ -37,27 +39,30 @@ const ServiceEditor = ({
   service,
   textFields,
 }: ServiceEditorProps): JSX.Element => {
-  const processData = (data: ServiceDetails, type: string): ServiceDetails => {
+  // to avoid null or undefined inputs in the text fields and send null values for non updated string values
+  const processData = (
+    data: ServiceDetails,
+    processType: string
+  ): ServiceDetails => {
     const keyList = Object.keys(data);
     for (let i = 0; i < keyList.length; i += 1) {
       const key = keyList[i];
       if (
-        (data[key as keyof typeof data] === null ||
-          data[key as keyof typeof data] === undefined ||
-          data[key as keyof typeof data] === '') &&
-        type === 'preprocess'
+        (data[key as keyof ServiceDetails] === null ||
+          data[key as keyof ServiceDetails] === undefined ||
+          data[key as keyof ServiceDetails] === '') &&
+        processType === PROCESS_TYPE.PRE_PROCESS
       ) {
-        // eslint-disable-next-line no-param-reassign
-        data[key as keyof typeof data] = '';
-      } else if (data[key as keyof typeof data] === '')
-        // eslint-disable-next-line no-param-reassign
-        data[key as keyof typeof data] = null;
+        data = { ...data, [key]: '' };
+      } else if (data[key as keyof ServiceDetails] === '')
+        data = { ...data, [key]: null };
     }
     return data;
   };
 
-  const [currentService, setCurrentService] = React.useState<ServiceDetails>(
-    processData(service, 'preprocess')
+  const serviceData = useSelector(
+    (state: { reducer: { serviceData: ServiceDetails } }) =>
+      processData(state.reducer.serviceData, PROCESS_TYPE.PRE_PROCESS)
   );
 
   const [loading, setLoading] = React.useState(false);
@@ -99,7 +104,9 @@ const ServiceEditor = ({
   const paramValue = query.get('newId');
 
   const handleOnCancel = (): void => {
-    setCurrentService(service);
+    dispatch(
+      updateValue({ type: ACTION_TYPES.UPDATE_SERVICE_DATA, data: service })
+    );
   };
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -111,17 +118,26 @@ const ServiceEditor = ({
   }) => {
     e.preventDefault;
     const { name, type, value } = e.target;
-    setCurrentService({
-      ...currentService,
-      [name]: type === 'number' ? parseInt(value, 10) : value,
-    });
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.UPDATE_SERVICE_DATA_VALUES,
+        key: name,
+        value: type === 'number' ? parseInt(value, 10) : value,
+      })
+    );
   };
 
   const handleListChange = (
-    key: keyof typeof service,
+    key: keyof ServiceDetails,
     value: string[]
   ): void => {
-    currentService[key] = value;
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.UPDATE_SERVICE_DATA_VALUES,
+        key,
+        value,
+      })
+    );
   };
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
@@ -129,7 +145,7 @@ const ServiceEditor = ({
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const postService = async () => {
       if (paramValue === 'true') {
-        const request = currentService;
+        const request = serviceData;
         delete request.id;
         delete request.description;
         if (request.ca_certificates === '') request.ca_certificates = null;
@@ -158,16 +174,13 @@ const ServiceEditor = ({
                 : API_RESPONSE_SNACK_MESSAGE.unableToSaveData,
               'error'
             );
-            request.ca_certificates = '';
-            request.id = '';
-            request.client_certificate = '';
           });
         setLoading(false);
       } else {
         setLoading(true);
         const request: ServiceDetails = processData(
-          currentService,
-          'postProcess'
+          serviceData,
+          PROCESS_TYPE.POST_PROCESS
         );
         await PATCH({
           url: `${BASE_API_URL}/services/${id}`,
@@ -180,7 +193,6 @@ const ServiceEditor = ({
                 API_RESPONSE_SNACK_MESSAGE.modifiedExistingService,
                 'success'
               );
-              setCurrentService(processData(response.data, 'preprocess'));
             }
           })
           .catch((err) => {
@@ -194,8 +206,8 @@ const ServiceEditor = ({
         setLoading(false);
       }
     };
-    updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     postService();
+    updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
   };
 
   return (
@@ -240,9 +252,9 @@ const ServiceEditor = ({
                   </InputLabel>
                   {text.type === 'list' && (
                     <TagsInput
-                      value={currentService[text.key as keyof typeof service]}
+                      value={serviceData[text.key as keyof ServiceDetails]}
                       onChange={(e) => {
-                        handleListChange(text.key as keyof typeof service, e);
+                        handleListChange(text.key as keyof ServiceDetails, e);
                       }}
                     />
                   )}
@@ -253,7 +265,7 @@ const ServiceEditor = ({
                       }}
                       type={text.type}
                       name={text.key}
-                      value={currentService[text.key as keyof typeof service]}
+                      value={serviceData[text.key as keyof ServiceDetails]}
                       onChange={handleOnChange}
                     />
                   )}

@@ -1,4 +1,5 @@
-/* eslint-disable dot-notation */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-param-reassign */
 import * as React from 'react';
 import {
   Box,
@@ -17,6 +18,8 @@ import {
   ACTION_TYPES,
   API_RESPONSE_SNACK_MESSAGE,
   BASE_API_URL,
+  ROUTE_DETAILS_INTERFACE,
+  PROCESS_TYPE,
 } from '../Shared/constants';
 import { PATCH, POST } from '../Helpers/ApiHelpers';
 import { SnackBarAlert } from './Features/SnackBarAlert';
@@ -77,94 +80,132 @@ const RouteEditor = ({
   textFields,
   param,
 }: EditorProps): JSX.Element => {
-  const [currentContent, setCurrentContent] =
-    React.useState<RouteDetails>(content);
+  let routeData = useSelector(
+    (state: { reducer: { routeData: RouteDetails } }) => state.reducer.routeData
+  );
+  if (param) routeData = ROUTE_DETAILS_INTERFACE;
+
   const dispatch = useDispatch();
+
   const [loading, setLoading] = React.useState(false);
+
   const openSnackBar = useSelector(
     (state: { reducer: { openSnackBar: boolean } }) =>
       state.reducer.openSnackBar
   );
+
   const snack = useSelector(
     (state: { reducer: { snackBar: snackMessageProp } }) =>
       state.reducer.snackBar
   );
-  const [toggleData, setToggleData] = React.useState({
-    strip_path: false,
-    preserve_host: false,
-  });
+
   const { id } = useParams();
 
   const updateFlagReducer = (type: string, value: boolean): void => {
     dispatch(updateValue({ type, value }));
   };
 
-  const handleOnCancel = (): void => {
-    setCurrentContent(content);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleOnChange = (e: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     preventDefault: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target: { name: any; type: any; value: any };
-  }) => {
+  }): void => {
     e.preventDefault;
     const { name, type, value } = e.target;
-    setCurrentContent({
-      ...currentContent,
-      [name]: type === 'number' ? parseInt(value, 10) : value,
-    });
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.UPDATE_ROUTE_DATA_VALUES,
+        key: name,
+        value: type === 'number' ? parseInt(value, 10) : value,
+      })
+    );
   };
 
-  const preProcess = (data: RouteDetails): RouteDetails => {
-    const keyList = Object.keys(data);
-    toggleData.preserve_host = data.preserve_host;
-    toggleData.strip_path = data.strip_path;
-    setToggleData(toggleData);
-    for (let i = 0; i < keyList.length; i += 1) {
-      const key = keyList[i];
-      if (
-        data[key as keyof typeof data] === null ||
-        data[key as keyof typeof data] === undefined
-      )
-        // eslint-disable-next-line no-param-reassign
-        data[key as keyof typeof data] = [];
-    }
-    if (Object.keys(data.headers).length === 0) {
-      // eslint-disable-next-line no-param-reassign
-      data.headers = [];
-    } else if (data.headers) {
-      const headers = [];
-      const keys = Object.keys(data.headers);
-      for (let j = 0; j < keys.length; j += 1) {
-        headers.push(keys[j].concat(`:${data.headers[keys[j]]}`));
+  const processData = (
+    data: RouteDetails,
+    processType: string
+  ): RouteDetails => {
+    if (processType === PROCESS_TYPE.PRE_PROCESS) {
+      const keyList = Object.keys(data);
+      for (let i = 0; i < keyList.length; i += 1) {
+        const key = keyList[i];
+        if (
+          data[key as keyof typeof data] === null ||
+          data[key as keyof typeof data] === undefined
+        )
+          data = { ...data, [key]: '' };
       }
-      // eslint-disable-next-line no-param-reassign
-      data.headers = headers;
+      if (Object.keys(data.headers).length === 0) {
+        data = { ...data, headers: [] };
+      } else if (data.headers) {
+        const headers = [];
+        const keys = Object.keys(data.headers);
+        for (let j = 0; j < keys.length; j += 1) {
+          headers.push(keys[j].concat(`:${data.headers[keys[j]]}`));
+        }
+        data = { ...data, headers };
+      }
+    } else {
+      if (
+        data.protocols.length !== 0 &&
+        data.sources.length === 0 &&
+        data.destinations.length === 0
+      ) {
+        data = { ...data, sources: null, destinations: null };
+      }
+      if (data.headers.length === 0) data.headers = {};
+      else {
+        const header = data.headers;
+        const res: any = {};
+        for (let i = 0; i < header.length; i += 1) {
+          const current = header[i].split(':');
+          res[current[0]] = current[1].split(',');
+        }
+        data = { ...data, headers: res };
+      }
+      delete data.service_name;
     }
     return data;
   };
 
+  const handleOnCancel = (): void => {
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.UPDATE_ROUTE_DATA,
+        data: processData(content, PROCESS_TYPE.PRE_PROCESS),
+      })
+    );
+  };
+
   const handleToggle = (key: string): void => {
-    if (key === 'strip_path') toggleData.strip_path = !toggleData.strip_path;
-    else toggleData.preserve_host = !toggleData.preserve_host;
-    setToggleData(toggleData);
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.UPDATE_ROUTE_DATA_VALUES,
+        key,
+        value:
+          key === 'strip_path'
+            ? !routeData.strip_path
+            : !routeData.preserve_host,
+      })
+    );
   };
 
   const handleListChange = (
     key: keyof typeof content,
     value: string[]
   ): void => {
-    currentContent[key] = value;
+    dispatch(
+      updateValue({ type: ACTION_TYPES.UPDATE_ROUTE_DATA_VALUES, key, value })
+    );
   };
 
   const handlePathHandling = (): void => {
-    setCurrentContent({
-      ...currentContent,
-      path_handling: currentContent.path_handling === 'v1' ? 'v0' : 'v1',
-    });
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.UPDATE_ROUTE_DATA_VALUES,
+        key: 'path_handling',
+        value: routeData.path_handling === 'v1' ? 'v0' : 'v1',
+      })
+    );
   };
 
   const updateSnackMessage = (message: string, severity: string): void => {
@@ -177,37 +218,14 @@ const RouteEditor = ({
     );
   };
 
-  const postProcess = (request: RouteDetails): RouteDetails => {
-    if (
-      request.protocols.length !== 0 &&
-      request.sources.length === 0 &&
-      request.destinations.length === 0
-    ) {
-      request.sources = null;
-      request.destinations = null;
-    }
-    if (request.headers.length === 0) request.headers = {};
-    else {
-      const header = request.headers;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: any = {};
-      for (let i = 0; i < header.length; i += 1) {
-        const current = header[i].split(':');
-        res[current[0]] = current[1].split(',');
-      }
-
-      request.headers = res;
-    }
-    request.preserve_host = toggleData.preserve_host;
-    request.strip_path = toggleData.strip_path;
-    return request;
-  };
-
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const postService = async (): Promise<any> => {
-      const request: RouteDetails = postProcess(currentContent);
+      const request: RouteDetails = processData(
+        routeData,
+        PROCESS_TYPE.POST_PROCESS
+      );
       if (!param) {
         setLoading(true);
         await PATCH({
@@ -221,24 +239,29 @@ const RouteEditor = ({
                 API_RESPONSE_SNACK_MESSAGE.modifiedExistingRoute,
                 'success'
               );
-              setCurrentContent(preProcess(response.data));
             }
           })
           .catch((err) => {
             updateSnackMessage(
               err.response
                 ? err.response.data.message
-                : API_RESPONSE_SNACK_MESSAGE.createdNewRoute,
-              'success'
+                : API_RESPONSE_SNACK_MESSAGE.unableToSaveData,
+              'error'
             );
-            setCurrentContent(preProcess(request));
+            dispatch(
+              updateValue({
+                type: ACTION_TYPES.UPDATE_ROUTE_DATA,
+                data: processData(request, PROCESS_TYPE.PRE_PROCESS),
+              })
+            );
           });
         updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
         setLoading(false);
       } else {
+        request.service = {
+          id,
+        };
         setLoading(true);
-        request.service.id = id;
-        delete request.service_name;
         await POST({
           url: `${BASE_API_URL}/routes`,
           body: request,
@@ -250,13 +273,17 @@ const RouteEditor = ({
                 API_RESPONSE_SNACK_MESSAGE.createdNewRoute,
                 'success'
               );
-              setCurrentContent(preProcess(response.data));
               updateFlagReducer(ACTION_TYPES.OPEN_ROUTE_MODAL, false);
               updateFlagReducer(ACTION_TYPES.REFRESH_ROUTE_TABLE, true);
             }
           })
           .catch((err) => {
-            setCurrentContent(preProcess(currentContent));
+            dispatch(
+              updateValue({
+                type: ACTION_TYPES.UPDATE_ROUTE_DATA,
+                data: processData(routeData, PROCESS_TYPE.PRE_PROCESS),
+              })
+            );
             updateSnackMessage(
               err.response
                 ? err.response.data.message
@@ -312,14 +339,14 @@ const RouteEditor = ({
                   {text.type === 'checkbox' && (
                     <div style={{ display: 'block' }}>
                       <ExampleTrackChild
-                        yes={currentContent[text.key as keyof typeof content]}
+                        yes={routeData[text.key as keyof typeof content]}
                         onChange={() => handleToggle(text.key)}
                       />
                     </div>
                   )}
                   {text.type === 'list' && (
                     <TagsInput
-                      value={currentContent[text.key as keyof typeof content]}
+                      value={routeData[text.key as keyof typeof content]}
                       onChange={(e) => {
                         handleListChange(text.key as keyof typeof content, e);
                       }}
@@ -327,10 +354,8 @@ const RouteEditor = ({
                   )}
                   {text.type === 'dropdown' && (
                     <Select
-                      defaultValue={
-                        currentContent[text.key as keyof typeof content]
-                      }
-                      value={currentContent[text.key as keyof typeof content]}
+                      defaultValue={routeData[text.key as keyof typeof content]}
+                      value={routeData[text.key as keyof typeof content]}
                       onChange={handlePathHandling}
                     >
                       <Option value="v1">v1</Option>
@@ -349,7 +374,7 @@ const RouteEditor = ({
                           borderRadius: '5px',
                         }}
                         name={text.key}
-                        value={currentContent[text.key as keyof typeof content]}
+                        value={routeData[text.key as keyof typeof content]}
                         disabled={text.key === 'id'}
                         onChange={handleOnChange}
                       />
