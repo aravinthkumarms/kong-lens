@@ -41,23 +41,7 @@ const storeReducer = createSlice({
           state.openSnackBar = action.payload.value;
           return state;
         case ACTION_TYPES.UPDATE_ROUTE_DATA:
-          state.routeData.name = action.payload.data.name;
-          state.routeData.destinations = action.payload.data.destinations;
-          state.routeData.hosts = action.payload.data.hosts;
-          state.routeData.headers = action.payload.data.headers;
-          state.routeData.tags = action.payload.data.tags;
-          state.routeData.https_redirect_status_code =
-            action.payload.data.https_redirect_status_code;
-          state.routeData.methods = action.payload.data.methods;
-          state.routeData.path_handling = action.payload.data.path_handling;
-          state.routeData.paths = action.payload.data.paths;
-          state.routeData.preserve_host = action.payload.data.preserve_host;
-          state.routeData.protocols = action.payload.data.protocols;
-          state.routeData.regex_priority = action.payload.data.regex_priority;
-          state.routeData.service = action.payload.data.service;
-          state.routeData.snis = action.payload.data.snis;
-          state.routeData.sources = action.payload.data.sources;
-          state.routeData.strip_path = action.payload.data.strip_path;
+          state.routeData = action.payload.data;
           return state;
         case ACTION_TYPES.UPDATE_ROUTE_DATA_VALUES:
           state.routeData = {
@@ -66,23 +50,7 @@ const storeReducer = createSlice({
           };
           return state;
         case ACTION_TYPES.UPDATE_SERVICE_DATA:
-          state.serviceData.name = action.payload.data.name;
-          state.serviceData.description = action.payload.data.description;
-          state.serviceData.ca_certificates =
-            action.payload.data.ca_certificates;
-          state.serviceData.client_certificate =
-            action.payload.data.client_certificate;
-          state.serviceData.tags = action.payload.data.tags;
-          state.serviceData.connect_timeout =
-            action.payload.data.connect_timeout;
-          state.serviceData.write_timeout = action.payload.data.write_timeout;
-          state.serviceData.read_timeout = action.payload.data.read_timeout;
-          state.serviceData.id = action.payload.data.id;
-          state.serviceData.host = action.payload.data.host;
-          state.serviceData.protocol = action.payload.data.protocol;
-          state.serviceData.path = action.payload.data.path;
-          state.serviceData.port = action.payload.data.port;
-          state.serviceData.retries = action.payload.data.retries;
+          state.serviceData = action.payload.data;
           return state;
         case ACTION_TYPES.UPDATE_SERVICE_DATA_VALUES:
           state.serviceData = {
