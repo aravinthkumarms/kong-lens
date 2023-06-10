@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import MaterialReactTable, {
+import {
+  MaterialReactTable,
   MRT_ColumnDef,
   MRT_Row,
 } from 'material-react-table';
