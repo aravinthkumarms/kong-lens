@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-param-reassign */
 import * as React from 'react';
 import {
@@ -17,6 +18,7 @@ import {
   API_RESPONSE_SNACK_MESSAGE,
   ACTION_TYPES,
   PROCESS_TYPE,
+  SERVICE_DETAILS_INTERFACE,
 } from '../Shared/constants';
 import { POST, PATCH } from '../Helpers/ApiHelpers';
 import { SnackBarAlert } from './Features/SnackBarAlert';
@@ -39,6 +41,16 @@ const ServiceEditor = ({
   service,
   textFields,
 }: ServiceEditorProps): JSX.Element => {
+  let { id } = useParams();
+
+  const navigate = useNavigate();
+
+  const { search } = useLocation();
+
+  const query = new URLSearchParams(search);
+
+  const paramValue = query.get('newId') === 'true';
+
   // to avoid null or undefined inputs in the text fields and send null values for non updated string values
   const processData = (
     data: ServiceDetails,
@@ -60,10 +72,12 @@ const ServiceEditor = ({
     return data;
   };
 
-  const serviceData = useSelector(
+  let serviceData = useSelector(
     (state: { reducer: { serviceData: ServiceDetails } }) =>
       processData(state.reducer.serviceData, PROCESS_TYPE.PRE_PROCESS)
   );
+
+  if (paramValue) serviceData = SERVICE_DETAILS_INTERFACE;
 
   const [loading, setLoading] = React.useState(false);
 
@@ -93,29 +107,16 @@ const ServiceEditor = ({
     );
   };
 
-  let { id } = useParams();
-
-  const navigate = useNavigate();
-
-  const { search } = useLocation();
-
-  const query = new URLSearchParams(search);
-
-  const paramValue = query.get('newId');
-
   const handleOnCancel = (): void => {
     dispatch(
       updateValue({ type: ACTION_TYPES.UPDATE_SERVICE_DATA, data: service })
     );
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleOnChange = (e: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     preventDefault: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target: { name: any; type: any; value: any };
-  }) => {
+  }): void => {
     e.preventDefault;
     const { name, type, value } = e.target;
     dispatch(
@@ -142,9 +143,8 @@ const ServiceEditor = ({
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const postService = async () => {
-      if (paramValue === 'true') {
+    const postService = async (): Promise<any> => {
+      if (paramValue) {
         const request = serviceData;
         delete request.id;
         delete request.description;
