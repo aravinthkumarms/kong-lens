@@ -1,14 +1,11 @@
 import React from 'react';
 import { ModalClose, Sheet, Typography, Modal, ModalOverflow } from '@mui/joy';
-
-import { useDispatch } from 'react-redux';
 import { CreateRouteProps } from '../../interfaces';
 import RouteEditor from '../RouteEditor';
 import {
   ROUTE_DETAILS_INTERFACE,
   ROUTE_TEXT_FIELDS,
 } from '../../Shared/constants';
-import { updateValue } from '../../Reducer/StoreReducer';
 
 export const CreateRoute = ({
   open,
