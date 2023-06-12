@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,26 +11,21 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../assets/kong-lens.png';
 
 const theme = createTheme();
 
-export default function Login() {
+export default function Login(): JSX.Element {
   const navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
     if (data.get('email') === 'admin' && data.get('password') === 'admin') {
       navigate('/dashboard');
     } else {
+      // eslint-disable-next-line no-alert
       alert('Invalid username/password');
     }
   };

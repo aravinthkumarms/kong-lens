@@ -1,13 +1,12 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import parse from 'html-react-parser';
+import { PageHeaderIconProps } from '../../interfaces';
 
-type PageHeaderProps = {
-  header: string;
-  icon: JSX.Element;
-};
-
-const MiniPageHeaderBox = ({ header, icon }: PageHeaderProps): JSX.Element => (
+const MiniPageHeaderBox = ({
+  header,
+  icon,
+}: PageHeaderIconProps): JSX.Element => (
   <Box
     sx={{
       bgcolor: '#f5f5f5',
@@ -35,6 +34,6 @@ const MiniPageHeaderBox = ({ header, icon }: PageHeaderProps): JSX.Element => (
 export default function MiniPageHeader({
   header,
   icon,
-}: PageHeaderProps): JSX.Element {
+}: PageHeaderIconProps): JSX.Element {
   return <MiniPageHeaderBox header={header} icon={icon} />;
 }

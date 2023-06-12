@@ -1,16 +1,12 @@
 import * as React from 'react';
 import parse from 'html-react-parser';
 import Box from '@mui/material/Box';
-
-type PageHeaderProps = {
-  header: string;
-  description: string;
-};
+import { PageHeaderDescProps } from '../../interfaces';
 
 const PageHeaderBox = ({
   header,
   description,
-}: PageHeaderProps): JSX.Element => (
+}: PageHeaderDescProps): JSX.Element => (
   <Box
     sx={{
       bgcolor: '#f5f5f5',
@@ -39,6 +35,6 @@ const PageHeaderBox = ({
 export default function PageHeader({
   header,
   description,
-}: PageHeaderProps): JSX.Element {
+}: PageHeaderDescProps): JSX.Element {
   return <PageHeaderBox header={header} description={description} />;
 }

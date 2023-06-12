@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -27,7 +28,7 @@ import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 import { useNavigate } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Dashboard } from './Dashboard';
-import PluginBox from '../Components/PluginBox';
+import PluginBox from '../Components/Features/PluginBox';
 import Info from './Info';
 import MenuItem from '../Components/Features/MenuItem';
 import Routes from './Routes';
@@ -39,7 +40,8 @@ import Users from './Users';
 import Connections from './Connections';
 import Settings from './Settings';
 import Services from './Services';
-import ServiceDetail from '../Components/Features/ServiceDetail';
+import ServiceDetail from '../Components/ServiceDetail';
+import RouteDetail from '../Components/RouteDetail';
 
 const drawerWidth = 240;
 
@@ -130,9 +132,9 @@ const renderPages: { [page: string]: JSX.Element } = {
   dashboard: <Dashboard />,
   info: <Info />,
   services: <Services />,
-  routes: <Routes />,
+  routes: <Routes type="separate" />,
   consumers: <Consumers />,
-  plugins: <Plugins />,
+  plugins: <Plugins type="separate" />,
   upstreams: <Upstreams />,
   certificates: <Certificates />,
   users: <Users />,
@@ -140,6 +142,7 @@ const renderPages: { [page: string]: JSX.Element } = {
   snapshots: <Info />,
   settings: <Settings />,
   servicesDetail: <ServiceDetail />,
+  routesDetail: <RouteDetail />,
 };
 
 // const getPage = ({ props }: any) => {

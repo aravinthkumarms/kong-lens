@@ -1,14 +1,9 @@
 import { ListItemButton, ListItemText } from '@mui/material';
 import * as React from 'react';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { MenuItemProps } from '../../interfaces';
 
-type MenuItemProps = {
-  open: boolean;
-  handlePageRender(page: string): void;
-  page: string;
-  icon: JSX.Element;
-  curLocation: string;
-};
+
 
 const MenuItemElement = ({
   open,

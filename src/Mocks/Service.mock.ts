@@ -1,19 +1,8 @@
-export interface Service {
-  id?: string;
-  created_at: number;
-  updated_at: number;
-  name: string;
-  retries: number;
-  protocol: string;
-  host: string;
-  port: number;
-  path: string;
-  connect_timeout: number;
-  write_timeout: number;
-  read_timeout: number;
-}
+
 
 // import { Person } from './TS';
+
+import { Service } from "../interfaces";
 
 export const data: Service[] = [
   {

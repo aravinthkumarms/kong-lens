@@ -1,139 +1,108 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import MaterialReactTable, {
-  MaterialReactTableProps,
-  MRT_Cell,
+import {
+  MaterialReactTable,
   MRT_ColumnDef,
   MRT_Row,
 } from 'material-react-table';
-import { ActionIcon, TextInput } from '@mantine/core';
-import { IconTrash, IconEdit } from '@tabler/icons-react';
-import {
-  CssBaseline,
-  Divider,
-  Button,
-  Dialog,
-  Box,
-  Stack,
-  Tooltip,
-  DialogTitle,
-} from '@mui/material';
+import { ActionIcon } from '@mantine/core';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { CssBaseline, Button, Box, Tooltip } from '@mui/material';
 import useAwaitableComponent from 'use-awaitable-component';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
-import { stateInterface, updateValue } from '../Reducer/ServiceReducer';
-import { data, Service } from '../Mocks/Service.mock';
+import { Delete } from '@mui/icons-material';
+import { useSelector, useDispatch } from 'react-redux';
+import { DELETE, GET } from '../Helpers/ApiHelpers';
 import PageHeader from '../Components/Features/PageHeader';
 import DialogModal from '../Components/Features/DialogModal';
-
-// export type Service = {
-//   id: string;
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   age: number;
-//   state: string;
-// };
-
-// example of creating a mantine dialog modal for creating new rows
-export const CreateNewAccountModal = ({
-  open,
-  columns,
-  onClose,
-  onSubmit,
-}: Props): JSX.Element => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [values, setValues] = useState<any>();
-  const fullWidth = true;
-  const handleSubmit = (): void => {
-    // put your validation logic here
-    onSubmit(values);
-    onClose();
-  };
-
-  return (
-    <Divider>
-      <Dialog open={open} maxWidth="sm" fullWidth={fullWidth}>
-        <DialogTitle sx={{ margin: 'auto' }}>Create New Service</DialogTitle>
-        <Box
-          sx={{
-            width: '100%',
-            gap: '24px',
-            margin: 'auto',
-          }}
-        >
-          <form onSubmit={(e) => e.preventDefault()}>
-            <Stack
-              sx={{
-                width: '80%',
-                gap: '24px',
-                margin: 'auto',
-              }}
-            >
-              {columns.map((column) => (
-                <TextInput
-                  key={column.accessorKey}
-                  label={column.header}
-                  name={column.accessorKey}
-                  onChange={(e) =>
-                    setValues({ ...values, [e.target.name]: e.target.value })
-                  }
-                />
-              ))}
-            </Stack>
-          </form>
-        </Box>
-        <Box
-          sx={{
-            padding: '20px',
-            width: '100%',
-            justifyContent: 'center',
-            gap: '16px',
-            margin: 'auto',
-            display: 'flex',
-          }}
-        >
-          <Button
-            onClick={onClose}
-            sx={{
-              backgroundColor: 'teal',
-              color: 'white',
-            }}
-            variant="contained"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            sx={{
-              backgroundColor: 'teal',
-              color: 'white',
-            }}
-            variant="contained"
-          >
-            Submit
-          </Button>
-        </Box>
-      </Dialog>
-    </Divider>
-  );
-};
+import {
+  BASE_API_URL,
+  API_RESPONSE_SNACK_MESSAGE,
+  ACTION_TYPES,
+} from '../Shared/constants';
+import { snackMessageProp, ServiceDetails } from '../interfaces';
+import { SnackBarAlert } from '../Components/Features/SnackBarAlert';
+import { RawView } from '../Components/Features/RawView';
+import { TagComponent } from '../Components/Features/TagComponent';
+import { updateValue } from '../Reducer/StoreReducer';
 
 const Services = (): JSX.Element => {
-  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const dispatch = useDispatch();
   const deleteRow = useRef(false);
+  const openSnackBar = useSelector(
+    (state: { reducer: { openSnackBar: boolean } }) =>
+      state.reducer.openSnackBar
+  );
+  const snack = useSelector(
+    (state: { reducer: { snackBar: snackMessageProp } }) =>
+      state.reducer.snackBar
+  );
+
+  const updateFlagReducer = (type: string, value: boolean): void => {
+    dispatch(updateValue({ type, value }));
+  };
+
+  const updateSnackMessage = (message: string, severity: string): void => {
+    dispatch(
+      updateValue({
+        type: ACTION_TYPES.SET_SNACK_BAR_MESSAGE,
+        message,
+        severity,
+      })
+    );
+  };
+
   const [promise, setPromise] = useState<unknown>();
+  const [showRaw, setShowRaw] = useState<Map<string, boolean>>(
+    new Map<string, boolean>()
+  );
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, execute, resolve, reject, reset] = useAwaitableComponent();
-  const [tableData, setTableData] = useState<Service[]>(() => data);
-  const [validationErrors, setValidationErrors] = useState<{
-    [cellId: string]: string;
-  }>({});
+  const [tableData, setTableData] = useState<ServiceDetails[]>([]);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    const getServices = async () => {
+      await GET({
+        url: `${BASE_API_URL}/services/`,
+        headers: { 'Access-Control-Allow-Origin': '*' },
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            const { data } = response.data;
+            for (let i = 0; i < data.length; i += 1) {
+              const curServiceDetails: ServiceDetails = data[i];
+              Object.keys(curServiceDetails).forEach(() => {
+                if (typeof curServiceDetails.created_at === 'number') {
+                  curServiceDetails.created_at = new Date(
+                    curServiceDetails.created_at
+                  ).toLocaleDateString();
+                }
+              });
+            }
+            setTableData(data);
+            for (let i = 0; i < data.length; i += 1) {
+              showRaw.set(data[i].id, false);
+            }
+          }
+          updateSnackMessage(API_RESPONSE_SNACK_MESSAGE.fetchedData, 'success');
+        })
+        .catch((err) => {
+          updateSnackMessage(
+            err.response && err.response.data
+              ? err.response.data.message
+              : API_RESPONSE_SNACK_MESSAGE.unableToFetchData,
+            'error'
+          );
+        });
+    };
+    getServices();
+    updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleDeleteRow = useCallback(
-    (row: MRT_Row<Service>) => {
+    (row: MRT_Row<ServiceDetails>) => {
       if (
         // !confirm(`Are you sure you want to delete ${row.getValue('firstName')}`)
         !deleteRow
@@ -141,13 +110,45 @@ const Services = (): JSX.Element => {
         return;
       }
       // send api delete request here, then refetch or update local table data for re-render
-      tableData.splice(row.index, 1);
-      setTableData([...tableData]);
+      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+      const deleteData = async () => {
+        await DELETE({
+          url: `${BASE_API_URL}/services/${row.original.id}`,
+          headers: { 'Access-Control-Allow-Origin': '*' },
+        })
+          .then((response) => {
+            if (response.status === 204) {
+              updateSnackMessage(
+                API_RESPONSE_SNACK_MESSAGE.deletedService,
+                'info'
+              );
+              tableData.splice(row.index, 1);
+              setTableData([...tableData]);
+            }
+          })
+          .catch((err) => {
+            updateSnackMessage(
+              err.response
+                ? err.response.data.message
+                : API_RESPONSE_SNACK_MESSAGE.unableToDelete,
+              'error'
+            );
+          });
+      };
+      deleteData();
+      updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, true);
     },
-    [tableData]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch, tableData]
   );
 
-  const handleAwaitModal = async (row: MRT_Row<Service>): Promise<void> => {
+  const handleRawView = (id: string, value: boolean): void => {
+    setShowRaw((map) => new Map(map.set(id, value)));
+  };
+
+  const handleAwaitModal = async (
+    row: MRT_Row<ServiceDetails>
+  ): Promise<void> => {
     setConfirmDialogOpen(true);
     const val: unknown = await execute();
     setPromise(val);
@@ -160,66 +161,7 @@ const Services = (): JSX.Element => {
     setConfirmDialogOpen(!confirmDialogOpen);
   };
 
-  const handleCreateNewRow = (values: Service): void => {
-    tableData.push(values);
-    setTableData([...tableData]);
-  };
-
-  const handleSaveRowEdits: MaterialReactTableProps<Service>['onEditingRowSave'] =
-    async ({ exitEditingMode, row, values }) => {
-      if (!Object.keys(validationErrors).length) {
-        tableData[row.index] = values;
-        // send/receive api updates here, then refetch or update local table data for re-render
-        setTableData([...tableData]);
-        exitEditingMode(); // required to exit editing mode and close modal
-      }
-    };
-
-  const handleCancelRowEdits = (): void => {
-    setValidationErrors({});
-  };
-
-  const validateRequired = (value: string): boolean => !!value.length;
-  const validateEmail = (email: string): boolean | unknown =>
-    !!email.length &&
-    email
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  const validateAge = (age: number): boolean => age >= 18 && age <= 50;
-
-  const getCommonEditTextInputProps = useCallback(
-    (
-      cell: MRT_Cell<Service>
-    ): MRT_ColumnDef<Service>['muiTableBodyCellEditTextFieldProps'] => ({
-      onBlur: (event) => {
-        const isValid =
-          // eslint-disable-next-line no-nested-ternary
-          cell.column.id === 'email'
-            ? validateEmail(event.target.value)
-            : cell.column.id === 'age'
-            ? validateAge(+event.target.value)
-            : validateRequired(event.target.value);
-        if (!isValid) {
-          // set validation error for cell if invalid
-          setValidationErrors({
-            ...validationErrors,
-            [cell.id]: `${cell.column.columnDef.header} is required`,
-          });
-        } else {
-          // remove validation error for cell if valid
-          delete validationErrors[cell.id];
-          setValidationErrors({
-            ...validationErrors,
-          });
-        }
-      },
-    }),
-    [validationErrors]
-  );
-
-  const columns = useMemo<MRT_ColumnDef<Service>[]>(
+  const columns = useMemo<MRT_ColumnDef<ServiceDetails>[]>(
     () => [
       {
         enableHiding: true,
@@ -237,8 +179,7 @@ const Services = (): JSX.Element => {
         size: 140,
         muiTableBodyCellProps: ({ cell }) => ({
           onClick: () => {
-            navigate(`/services/${cell.row.original.id}/false`);
-            dispatch(updateValue(cell.row.original));
+            navigate(`/services/${cell.row.original.id}/?newId=false`);
           },
           sx: {
             cursor: 'pointer',
@@ -246,95 +187,80 @@ const Services = (): JSX.Element => {
             color: '#438BCA',
           },
         }),
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-        }),
+      },
+      {
+        accessorKey: 'tags',
+        header: 'Tags',
+        enableHiding: true,
+        size: 150,
+        // eslint-disable-next-line react/no-unstable-nested-components
+        Cell: ({ row }) => (
+          <div style={{ display: 'flex' }}>
+            {row.original.tags.map((tag: string) => (
+              <div key={tag}>
+                <TagComponent tag={tag} isList={false} />
+              </div>
+            ))}
+          </div>
+        ),
       },
       {
         accessorKey: 'protocol',
         header: 'Protocol',
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-        }),
       },
       {
         accessorKey: 'host',
         header: 'Host',
         size: 140,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-        }),
       },
       {
         accessorKey: 'port',
         header: 'Port',
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       {
         accessorKey: 'path',
         header: 'Path',
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-        }),
       },
       {
         accessorKey: 'retries',
         header: 'Retries',
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       {
         accessorKey: 'read_timeout',
         header: 'Read Timeout',
         size: 80,
         enableHiding: true,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       {
         accessorKey: 'write_timeout',
         header: 'Write Timeout',
         size: 80,
         enableHiding: true,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
       {
         accessorKey: 'connect_timeout',
         header: 'Connect Timeout',
         size: 80,
-        enableHiding: true,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextInputProps(cell),
-          type: 'number',
-        }),
       },
-      // {
-      //   accessorKey: 'path',
-      //   header: 'Path',
-      //   // mantineEditTextInputProps: {
-      //   //   select: true, //change to select for a dropdown
-      //   //   children: states.map((state) => (
-      //   //     <Menu.Item key={state} value={state}>
-      //   //       {state}
-      //   //     </Menu.Item>
-      //   //   )),
-      //   // },
-      // },
+      {
+        accessorKey: 'created_at',
+        header: 'Created',
+      },
+      {
+        accessorKey: 'client_certificate',
+        header: 'Client certificate',
+        enableHiding: true,
+      },
+      {
+        accessorKey: 'ca_certificates',
+        header: 'CA certificates',
+        enableHiding: true,
+      },
     ],
-    [getCommonEditTextInputProps, navigate, dispatch]
+    [navigate]
   );
 
   return (
@@ -346,6 +272,14 @@ const Services = (): JSX.Element => {
           description="Service entities, as the name implies, are abstractions of each of your own upstream services. Examples of Services would be a data transformation microservice, a billing API, etc."
         />
       </Box>
+      <SnackBarAlert
+        open={openSnackBar}
+        message={snack.message}
+        severity={snack.severity}
+        handleClose={() => {
+          updateFlagReducer(ACTION_TYPES.OPEN_SNACK_BAR, false);
+        }}
+      />
       <br />
       <MaterialReactTable
         displayColumnDefOptions={{
@@ -372,23 +306,29 @@ const Services = (): JSX.Element => {
             port: false,
           },
         }}
-        onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
-        renderRowActions={({ row, table }) => (
-          <Box sx={{ display: 'flex', gap: '16px' }}>
-            <Tooltip arrow placement="left" title="Edit">
-              <ActionIcon onClick={() => table.setEditingRow(row)}>
-                <IconEdit />
-              </ActionIcon>
+        renderRowActions={({ row }) => (
+          <Box sx={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <Tooltip arrow placement="left" title="Raw">
+              <>
+                <VisibilityIcon
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => handleRawView(row.original.id, true)}
+                />
+                <RawView
+                  json={row.original}
+                  open={showRaw.get(row.original.id) as boolean}
+                  onClose={() => handleRawView(row.original.id, false)}
+                />
+              </>
             </Tooltip>
-            <Tooltip arrow placement="right" title="Delete">
+            <Tooltip arrow placement="right-end" title="Delete">
               <ActionIcon
                 color="red"
                 onClick={() => {
                   handleAwaitModal(row);
                 }}
               >
-                <IconTrash />
+                <Delete />
               </ActionIcon>
             </Tooltip>
           </Box>
@@ -403,21 +343,13 @@ const Services = (): JSX.Element => {
               },
             }}
             onClick={() => {
-              const uuid = uuidv4();
-              navigate(`/services/${uuid}/true`);
-              dispatch(updateValue(stateInterface));
+              navigate(`/services/createService/?newId=true`);
             }}
             variant="contained"
           >
             Create New Service
           </Button>
         )}
-      />
-      <CreateNewAccountModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
       />
       <DialogModal
         description="Really want to delete the selected item?"
@@ -433,12 +365,5 @@ const Services = (): JSX.Element => {
     </>
   );
 };
-
-interface Props {
-  columns: MRT_ColumnDef<Service>[];
-  onClose: () => void;
-  onSubmit: (values: Service) => void;
-  open: boolean;
-}
 
 export default Services;
